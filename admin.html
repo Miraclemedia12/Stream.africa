@@ -71,7 +71,6 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
 
-    <!-- Login Card -->
     <div id="login-card" class="glass w-full max-w-sm rounded-[35px] p-10 text-center">
         <div class="mb-8 flex flex-col items-center">
             <img src="logo.png" alt="Logo" class="h-10 mb-4 brightness-0 invert opacity-80">
@@ -90,7 +89,6 @@
         </div>
     </div>
 
-    <!-- Dashboard Card -->
     <div id="dash-card" class="glass w-full max-w-lg rounded-[35px] p-8 hidden">
         <div class="flex justify-between items-start mb-8 border-b border-white/5 pb-6">
             <div>
@@ -106,7 +104,6 @@
         </div>
         
         <div class="space-y-6">
-            <!-- Nigeria Specific Section -->
             <div class="p-6 rounded-3xl border border-white/5 bg-white/5">
                 <div class="flex items-center gap-3 mb-6">
                     <span class="w-8 h-8 rounded-lg bg-[#b8d5b0]/10 flex items-center justify-center text-[#b8d5b0] text-xs">🇳🇬</span>
@@ -116,12 +113,12 @@
                 <div class="space-y-4">
                     <div>
                         <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Bank Name / Method</label>
-                        <input type="text" id="bank-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. Kuda">
+                        <input type="text" id="bank-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. PalmPay">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Account Number</label>
-                            <input type="text" id="num-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. 3003439402">
+                            <input type="text" id="num-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. 9116572309">
                         </div>
                         <div>
                             <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Amount</label>
@@ -130,12 +127,11 @@
                     </div>
                     <div>
                         <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Account Holder Name</label>
-                        <input type="text" id="name-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. MORRISH M ENTERPRISE">
+                        <input type="text" id="name-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. Caleb Akuma Chidera">
                     </div>
                 </div>
             </div>
 
-            <!-- Global Redirect Section -->
             <div class="p-6 rounded-3xl border border-white/5 bg-white/5">
                 <div class="flex items-center gap-3 mb-4">
                     <span class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 text-xs"><i class="fab fa-telegram-plane"></i></span>
@@ -158,14 +154,15 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Firebase Config (Matches your checkout/dashboard)
+    // NEW Firebase Config integrated
     const firebaseConfig = {
-        apiKey: "AIzaSyASDlQQMoXCeMZKs5O3KmO8zuFztt8rg2E",
-        authDomain: "celeste-web1.firebaseapp.com",
-        projectId: "celeste-web1",
-        storageBucket: "celeste-web1.firebasestorage.app",
-        messagingSenderId: "905722043319",
-        appId: "1:905722043319:web:83d032bf3608b8957b2632"
+        apiKey: "AIzaSyCBasWo7DVLYV6WiP7TKEayMXLPeH3JLMs",
+        authDomain: "streamafrica-7fc5d.firebaseapp.com",
+        projectId: "streamafrica-7fc5d",
+        storageBucket: "streamafrica-7fc5d.firebasestorage.app",
+        messagingSenderId: "339049993823",
+        appId: "1:339049993823:web:70d0e998269627d8646dea",
+        measurementId: "G-R8VZ77T1J6"
     };
     
     const app = initializeApp(firebaseConfig);
@@ -177,8 +174,8 @@
     window.handleLogin = () => {
         const u = document.getElementById('user').value;
         const p = document.getElementById('pass').value;
-        // Updated credentials for Stream Africa
-        if(u === "admin" && p === "stream2026") {
+        // Updated credentials as requested
+        if(u === "admin" && p === "streamafrica1") {
             document.getElementById('login-card').classList.add('hidden');
             document.getElementById('dash-card').classList.remove('hidden');
             initDash();
@@ -192,11 +189,17 @@
         const snap = await getDoc(docRef);
         if(snap.exists()) {
             const d = snap.data();
-            document.getElementById('bank-in').value = d.nigeriaBank || "Kuda";
-            document.getElementById('num-in').value = d.nigeriaNumber || "3003439402";
-            document.getElementById('name-in').value = d.nigeriaHolder || "MORRISH M ENTERPRISE";
+            document.getElementById('bank-in').value = d.nigeriaBank || "PalmPay";
+            document.getElementById('num-in').value = d.nigeriaNumber || "9116572309";
+            document.getElementById('name-in').value = d.nigeriaHolder || "Caleb Akuma Chidera";
             document.getElementById('amount-in').value = d.nigeriaAmount || "₦12,000";
             document.getElementById('link-in').value = d.telegramLink || "";
+        } else {
+            // Default fallbacks if no data exists in Firestore yet
+            document.getElementById('bank-in').value = "PalmPay";
+            document.getElementById('num-in').value = "9116572309";
+            document.getElementById('name-in').value = "Caleb Akuma Chidera";
+            document.getElementById('amount-in').value = "₦12,000";
         }
     }
 
@@ -229,4 +232,3 @@
 </script>
 </body>
 </html>
-
