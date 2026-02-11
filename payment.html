@@ -187,30 +187,34 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 
+    // Your NEW web app's Firebase configuration
     const firebaseConfig = {
-        apiKey: "AIzaSyASDlQQMoXCeMZKs5O3KmO8zuFztt8rg2E",
-        authDomain: "celeste-web1.firebaseapp.com",
-        projectId: "celeste-web1",
-        storageBucket: "celeste-web1.firebasestorage.app",
-        messagingSenderId: "905722043319",
-        appId: "1:905722043319:web:83d032bf3608b8957b2632"
+        apiKey: "AIzaSyCBasWo7DVLYV6WiP7TKEayMXLPeH3JLMs",
+        authDomain: "streamafrica-7fc5d.firebaseapp.com",
+        projectId: "streamafrica-7fc5d",
+        storageBucket: "streamafrica-7fc5d.firebasestorage.app",
+        messagingSenderId: "339049993823",
+        appId: "1:339049993823:web:70d0e998269627d8646dea",
+        measurementId: "G-R8VZ77T1J6"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const analytics = getAnalytics(app);
 
     const streamData = {
         "uganda": { name: "Uganda", bank: "Airtel Uganda", number: "0708771078", holder: "ARINDA WINFRED", amount: "65,000 UGX" },
         "south_africa": { name: "South Africa", bank: "STANDARD BANK", number: "10247413028", holder: "E K Dlamini", amount: "R350" },
-        "nigeria": { name: "Nigeria", bank: "Kuda", number: "3003439402", holder: "MORRISH M ENTERPRISE", amount: "₦12,000" },
+        "nigeria": { name: "Nigeria", bank: "PAMLPAY", number: "9116572309", holder: "Caleb Akuma Chidera", amount: "₦12,000" },
         "ghana": { name: "Ghana", bank: "MTN Mobile Money", number: "0534550779", holder: "Kingsley Annor", amount: "200 GHS" },
         "cameroon": { name: "Cameroon", bank: "MTN Mobile money", number: "670312294", holder: "MARGARET NUYIN", amount: "12,000 XAF" },
         "kenya": { name: "Kenya", bank: "MPESA", number: "0702552808", holder: "Rose Cherono", amount: "2,800 KSH" }
     };
 
-    let vendorLink = "https://t.me/morrishmedia";
+    let vendorLink = "https://t.me/PriscaOfficialRegistrationTeam";
 
     function setupUI() {
         const selected = localStorage.getItem('selected_country') || 'nigeria';
@@ -286,11 +290,13 @@
     setInterval(() => {
         const item = activities[cur];
         const popup = document.getElementById('activity-popup');
-        document.getElementById('activity-text').innerText = `${item.name} activated for ${item.amt}`;
-        document.getElementById('activity-sub').innerText = `${item.loc} • Verified`;
-        popup.classList.add('show');
-        setTimeout(() => popup.classList.remove('show'), 4000);
-        cur = (cur + 1) % activities.length;
+        if (popup) {
+            document.getElementById('activity-text').innerText = `${item.name} activated for ${item.amt}`;
+            document.getElementById('activity-sub').innerText = `${item.loc} • Verified`;
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 4000);
+            cur = (cur + 1) % activities.length;
+        }
     }, 8000);
 </script>
 </body>
