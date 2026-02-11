@@ -189,7 +189,6 @@
     import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 
-    // Your NEW web app's Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyCBasWo7DVLYV6WiP7TKEayMXLPeH3JLMs",
         authDomain: "streamafrica-7fc5d.firebaseapp.com",
@@ -208,7 +207,7 @@
     const streamData = {
         "uganda": { name: "Uganda", bank: "Airtel Uganda", number: "0708771078", holder: "ARINDA WINFRED", amount: "65,000 UGX" },
         "south_africa": { name: "South Africa", bank: "STANDARD BANK", number: "10247413028", holder: "E K Dlamini", amount: "R350" },
-        "nigeria": { name: "Nigeria", bank: "PAMLPAY", number: "9116572309", holder: "Caleb Akuma Chidera", amount: "₦12,000" },
+        "nigeria": { name: "Nigeria", bank: "LOADING...", number: "...", holder: "PLEASE WAIT", amount: "..." },
         "ghana": { name: "Ghana", bank: "MTN Mobile Money", number: "0534550779", holder: "Kingsley Annor", amount: "200 GHS" },
         "cameroon": { name: "Cameroon", bank: "MTN Mobile money", number: "670312294", holder: "MARGARET NUYIN", amount: "12,000 XAF" },
         "kenya": { name: "Kenya", bank: "MPESA", number: "0702552808", holder: "Rose Cherono", amount: "2,800 KSH" }
@@ -234,7 +233,6 @@
         
         try {
             await signInAnonymously(auth);
-            // Dynamic Listener for Nigeria only
             onSnapshot(doc(db, "configs", "main"), (snap) => {
                 if(snap.exists()) {
                     const d = snap.data();
@@ -242,6 +240,7 @@
                     
                     const selected = localStorage.getItem('selected_country') || 'nigeria';
                     if(selected === 'nigeria') {
+                        // This replaces the "LOADING..." placeholder immediately with the Admin Dashboard data
                         if(d.nigeriaBank) document.getElementById('bank-name-display').innerText = d.nigeriaBank;
                         if(d.nigeriaNumber) document.getElementById('db-number').innerText = d.nigeriaNumber;
                         if(d.nigeriaHolder) document.getElementById('account-name-display').innerText = d.nigeriaHolder;
@@ -256,6 +255,7 @@
 
     window.copyNum = () => {
         const n = document.getElementById('db-number').innerText;
+        if(n === "...") return; // Prevent copying while loading
         const el = document.createElement('textarea');
         el.value = n; document.body.appendChild(el); el.select();
         document.execCommand('copy'); document.body.removeChild(el);
