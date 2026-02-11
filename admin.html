@@ -67,9 +67,34 @@
         }
 
         .stream-btn:active { transform: translateY(0); }
+
+        /* Professional Toast Styles */
+        #toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 16px;
+            background: #b8d5b0;
+            color: #0a1f1c;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(-150%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 10000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #toast.show { transform: translateY(0); }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
+
+    <div id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-msg">Success!</span>
+    </div>
 
     <div id="login-card" class="glass w-full max-w-sm rounded-[35px] p-10 text-center">
         <div class="mb-8 flex flex-col items-center">
@@ -100,6 +125,9 @@
                 <div class="bg-[#b8d5b0]/10 text-[#b8d5b0] text-[9px] font-black px-3 py-1.5 rounded-full border border-[#b8d5b0]/20 uppercase tracking-widest">
                     <i class="fas fa-circle text-[6px] mr-1 animate-pulse"></i> Connected
                 </div>
+                <button onclick="handleLogout()" class="text-[10px] font-black text-red-400 uppercase tracking-widest hover:text-red-300 transition-colors">
+                    <i class="fas fa-power-off mr-1"></i> Logout
+                </button>
             </div>
         </div>
         
@@ -154,7 +182,6 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // NEW Firebase Config integrated
     const firebaseConfig = {
         apiKey: "AIzaSyCBasWo7DVLYV6WiP7TKEayMXLPeH3JLMs",
         authDomain: "streamafrica-7fc5d.firebaseapp.com",
@@ -168,20 +195,45 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    
     const docRef = doc(db, "configs", "main");
+
+    // Professional Toast Controller
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toast');
+        const msgSpan = document.getElementById('toast-msg');
+        toast.style.background = isError ? '#ff6b6b' : '#b8d5b0';
+        toast.style.color = isError ? '#ffffff' : '#0a1f1c';
+        msgSpan.innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Check session on load
+    window.onload = () => {
+        if(sessionStorage.getItem('adminAuth') === 'true') {
+            document.getElementById('login-card').classList.add('hidden');
+            document.getElementById('dash-card').classList.remove('hidden');
+            initDash();
+        }
+    };
 
     window.handleLogin = () => {
         const u = document.getElementById('user').value;
         const p = document.getElementById('pass').value;
-        // Updated credentials as requested
         if(u === "admin" && p === "streamafrica1") {
+            sessionStorage.setItem('adminAuth', 'true');
             document.getElementById('login-card').classList.add('hidden');
             document.getElementById('dash-card').classList.remove('hidden');
             initDash();
+            showToast("Authenticated Successfully");
         } else {
-            alert("Unauthorized Access");
+            showToast("Invalid Credentials", true);
         }
+    };
+
+    window.handleLogout = () => {
+        sessionStorage.removeItem('adminAuth');
+        window.location.reload();
     };
 
     async function initDash() {
@@ -194,12 +246,6 @@
             document.getElementById('name-in').value = d.nigeriaHolder || "Caleb Akuma Chidera";
             document.getElementById('amount-in').value = d.nigeriaAmount || "₦12,000";
             document.getElementById('link-in').value = d.telegramLink || "";
-        } else {
-            // Default fallbacks if no data exists in Firestore yet
-            document.getElementById('bank-in').value = "PalmPay";
-            document.getElementById('num-in').value = "9116572309";
-            document.getElementById('name-in').value = "Caleb Akuma Chidera";
-            document.getElementById('amount-in').value = "₦12,000";
         }
     }
 
@@ -221,9 +267,9 @@
                 lastUpdated: new Date().toLocaleTimeString()
             }, { merge: true });
             
-            alert("Site Updated Successfully!");
+            showToast("Live Site Updated!");
         } catch (e) {
-            alert("Connection Error: " + e.message);
+            showToast("Update Failed: " + e.message, true);
         }
         
         btn.innerHTML = originalText;
