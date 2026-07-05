@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Stream Africa</title>
+    <title>Sign In | Stream Africa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,7 +23,7 @@
 
         .glass { 
             background: rgba(255,255,255,0.02); 
-            border: 2px solid rgba(184, 213, 176, 0.2); 
+            border: 2px solid rgba(184, 213, 176, 0.15); 
             backdrop-filter: blur(15px); 
         }
 
@@ -38,32 +38,34 @@
             border-color: var(--stream-green) !important;
             background: rgba(184, 213, 176, 0.08) !important;
             outline: none;
+            box-shadow: 0 0 15px rgba(184, 213, 176, 0.1);
         }
 
         .stream-btn {
             background: var(--stream-green);
             color: var(--stream-dark);
-            font-weight: 900;
+            font-weight: 800;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .stream-btn:hover {
             filter: brightness(1.1);
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
 
         .stream-btn:active { transform: translateY(0); }
 
-        #toast {
+        /* Custom Notification Toast */
+        #custom-toast {
             position: fixed;
             top: 20px;
             right: 20px;
             padding: 16px 24px;
             border-radius: 16px;
             background: #ff6b6b;
-            color: #ffffff;
-            font-weight: 800;
+            color: #fff;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -72,69 +74,97 @@
             z-index: 10000;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        #toast.show { transform: translateY(0); }
+        #custom-toast.show { transform: translateY(0); }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
 
-    <div id="toast">
-        <i class="fas fa-exclamation-circle"></i>
-        <span id="toast-msg">Error message goes here</span>
+    <div id="custom-toast">
+        <i id="toast-icon" class="fas fa-exclamation-circle"></i>
+        <span id="toast-msg">Error Message</span>
     </div>
 
-    <div id="login-card" class="glass w-full max-w-sm rounded-[35px] p-10 text-center">
+    <div class="glass w-full max-w-md rounded-[35px] p-10 md:p-12 text-center shadow-2xl">
         <div class="mb-8 flex flex-col items-center">
-            <img src="logo.png" alt="Logo" class="h-10 mb-4 brightness-0 invert opacity-80">
-            <h1 class="text-2xl font-black text-[#b8d5b0] uppercase tracking-widest">Master Admin</h1>
+            <img src="logo.png" alt="Logo" class="h-12 mb-4 brightness-0 invert opacity-90">
+            <h1 class="text-2xl font-black text-[#b8d5b0] uppercase tracking-widest">Welcome Back</h1>
+            <p class="text-xs text-white/40 mt-1 uppercase tracking-wider font-semibold">Sign in to your account</p>
         </div>
-        
-        <form id="login-form" onsubmit="handleSubmit(event)" novalidate class="space-y-4">
+
+        <form id="login-form" onsubmit="executeLogin(event)" class="space-y-5 text-left">
             <div class="relative">
-                <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-white/20 text-sm"></i>
-                <input type="text" id="user" placeholder="Username" class="w-full pl-12 p-4 rounded-2xl outline-none">
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1 mb-1.5 block">Email / Username</label>
+                <div class="relative">
+                    <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-white/20 text-sm"></i>
+                    <input type="text" id="login-user" required placeholder="Enter your email" class="w-full pl-12 p-4 rounded-2xl outline-none text-sm">
+                </div>
             </div>
             
             <div class="relative">
-                <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-white/20 text-sm"></i>
-                <input type="password" id="pass" placeholder="Password" class="w-full pl-12 p-4 rounded-2xl outline-none">
+                <div class="flex justify-between items-center mb-1.5 px-1">
+                    <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block">Password</label>
+                    <a href="#" class="text-[10px] font-bold text-[#b8d5b0]/60 uppercase tracking-widest hover:text-[#b8d5b0] transition-colors">Forgot?</a>
+                </div>
+                <div class="relative">
+                    <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-white/20 text-sm"></i>
+                    <input type="password" id="login-pass" required placeholder="••••••••" class="w-full pl-12 p-4 rounded-2xl outline-none text-sm">
+                </div>
             </div>
-            
-            <button type="submit" id="login-btn" class="w-full stream-btn p-4 rounded-2xl mt-4 shadow-xl">AUTHENTICATE</button>
+
+            <div class="pt-2">
+                <button type="submit" class="w-full stream-btn p-4 rounded-2xl shadow-xl uppercase tracking-widest text-sm font-black">
+                    Sign In
+                </button>
+            </div>
         </form>
+
+        <div class="mt-8 border-t border-white/5 pt-6">
+            <p class="text-xs text-white/30 font-semibold">
+                Don't have an account? 
+                <a href="#" class="text-[#b8d5b0] hover:underline font-bold ml-1">Create One</a>
+            </p>
+        </div>
     </div>
 
 <script>
-    function showCustomAlert(message) {
-        const toast = document.getElementById('toast');
+    // Custom non-popup message handler
+    function displayNotification(message, isError = true) {
+        const toast = document.getElementById('custom-toast');
         const msgSpan = document.getElementById('toast-msg');
+        const icon = document.getElementById('toast-icon');
+
+        toast.style.background = isError ? '#ff6b6b' : '#b8d5b0';
+        toast.style.color = isError ? '#ffffff' : '#0a1f1c';
+        icon.className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+        
         msgSpan.innerText = message;
         toast.classList.add('show');
         
         setTimeout(() => {
             toast.classList.remove('show');
-        }, 3000);
+        }, 3500);
     }
 
-    function handleSubmit(event) {
-        // Stop standard form submission and default browser actions
-        event.preventDefault(); 
+    // Submission handler
+    function executeLogin(event) {
+        event.preventDefault();
         
-        const usernameInput = document.getElementById('user').value.trim();
-        const passwordInput = document.getElementById('pass').value.trim();
+        const userInput = document.getElementById('login-user').value.trim();
+        const passInput = document.getElementById('login-pass').value;
 
-        // Custom validation check instead of HTML5 popups
-        if (!usernameInput) {
-            showCustomAlert("Username cannot be blank!");
+        // Add authentication integration logic here (Firebase Auth API, Fetch request, etc.)
+        if (userInput === "" || passInput === "") {
+            displayNotification("Please fill in all fields required", true);
             return;
         }
 
-        if (!passwordInput) {
-            showCustomAlert("Password cannot be blank!");
-            return;
+        // Example trigger check: 
+        if (userInput === "admin@stream.africa" && passInput === "password123") {
+            displayNotification("Login Successful! Redirecting...", false);
+            // window.location.href = "dashboard.html";
+        } else {
+            displayNotification("Invalid account username or password status", true);
         }
-
-        // Handle your authentication logic below (Firebase, API redirect, etc.)
-        console.log("Form values verified. Proceeding with login execution...");
     }
 </script>
 </body>
