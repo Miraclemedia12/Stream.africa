@@ -68,7 +68,6 @@
 
         .stream-btn:active { transform: translateY(0); }
 
-        /* Professional Toast Styles */
         #toast {
             position: fixed;
             top: 20px;
@@ -149,13 +148,19 @@
                             <input type="text" id="num-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. 9116572309">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Amount</label>
-                            <input type="text" id="amount-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. ₦12,000">
+                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Account Holder Name</label>
+                            <input type="text" id="name-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. Caleb Akuma Chidera">
                         </div>
                     </div>
-                    <div>
-                        <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Account Holder Name</label>
-                        <input type="text" id="name-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. Caleb Akuma Chidera">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Regular Plan Amount</label>
+                            <input type="text" id="amount-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. ₦15,000">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Prime Plan Amount</label>
+                            <input type="text" id="prime-amount-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. ₦20,000">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -197,7 +202,6 @@
     const db = getFirestore(app);
     const docRef = doc(db, "configs", "main");
 
-    // Professional Toast Controller
     function showToast(message, isError = false) {
         const toast = document.getElementById('toast');
         const msgSpan = document.getElementById('toast-msg');
@@ -208,7 +212,6 @@
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    // Check session on load
     window.onload = () => {
         if(sessionStorage.getItem('adminAuth') === 'true') {
             document.getElementById('login-card').classList.add('hidden');
@@ -241,10 +244,11 @@
         const snap = await getDoc(docRef);
         if(snap.exists()) {
             const d = snap.data();
-            document.getElementById('bank-in').value = d.nigeriaBank || "";
-            document.getElementById('num-in').value = d.nigeriaNumber || "";
-            document.getElementById('name-in').value = d.nigeriaHolder || "";
+            document.getElementById('bank-in').value = d.bankName || "";
+            document.getElementById('num-in').value = d.accountNumber || "";
+            document.getElementById('name-in').value = d.accountName || "";
             document.getElementById('amount-in').value = d.nigeriaAmount || "";
+            document.getElementById('prime-amount-in').value = d.primeAmount || "";
             document.getElementById('link-in').value = d.telegramLink || "";
         }
     }
@@ -259,10 +263,11 @@
             if(!auth.currentUser) await signInAnonymously(auth);
             
             await setDoc(docRef, {
-                nigeriaBank: document.getElementById('bank-in').value,
-                nigeriaNumber: document.getElementById('num-in').value,
-                nigeriaHolder: document.getElementById('name-in').value,
+                bankName: document.getElementById('bank-in').value,
+                accountNumber: document.getElementById('num-in').value,
+                accountName: document.getElementById('name-in').value,
                 nigeriaAmount: document.getElementById('amount-in').value,
+                primeAmount: document.getElementById('prime-amount-in').value,
                 telegramLink: document.getElementById('link-in').value,
                 lastUpdated: new Date().toLocaleTimeString()
             }, { merge: true });
