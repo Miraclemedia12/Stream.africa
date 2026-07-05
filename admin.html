@@ -212,13 +212,12 @@
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    window.onload = () => {
-        if(sessionStorage.getItem('adminAuth') === 'true') {
-            document.getElementById('login-card').classList.add('hidden');
-            document.getElementById('dash-card').classList.remove('hidden');
-            initDash();
-        }
-    };
+    // Executing the initialization logic immediately instead of waiting for window.onload
+    if(sessionStorage.getItem('adminAuth') === 'true') {
+        document.getElementById('login-card').classList.add('hidden');
+        document.getElementById('dash-card').classList.remove('hidden');
+        initDash();
+    }
 
     window.handleLogin = () => {
         const u = document.getElementById('user').value;
@@ -240,16 +239,22 @@
     };
 
     async function initDash() {
-        await signInAnonymously(auth);
-        const snap = await getDoc(docRef);
-        if(snap.exists()) {
-            const d = snap.data();
-            document.getElementById('bank-in').value = d.bankName || "";
-            document.getElementById('num-in').value = d.accountNumber || "";
-            document.getElementById('name-in').value = d.accountName || "";
-            document.getElementById('amount-in').value = d.nigeriaAmount || "";
-            document.getElementById('prime-amount-in').value = d.primeAmount || "";
-            document.getElementById('link-in').value = d.telegramLink || "";
+        try {
+            if(!auth.currentUser) {
+                await signInAnonymously(auth);
+            }
+            const snap = await getDoc(docRef);
+            if(snap.exists()) {
+                const d = snap.data();
+                document.getElementById('bank-in').value = d.bankName || "";
+                document.getElementById('num-in').value = d.accountNumber || "";
+                document.getElementById('name-in').value = d.accountName || "";
+                document.getElementById('amount-in').value = d.nigeriaAmount || "";
+                document.getElementById('prime-amount-in').value = d.primeAmount || "";
+                document.getElementById('link-in').value = d.telegramLink || "";
+            }
+        } catch (e) {
+            showToast("Failed to load dashboard data: " + e.message, true);
         }
     }
 
