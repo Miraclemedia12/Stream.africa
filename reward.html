@@ -2,64 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rewards | GLAMOUR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards | STREAM AFRICA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-                
-        :root {
-            --glam-gold: #d4af37;
-            --glam-black: #050505;
-            --glam-red: #ff3b30;
-            --glam-green: #4ADE80;
-        }
-
         body {
             margin: 0;
             padding: 0;
-            background: var(--glam-black);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #ffffff;
+            background: #0a1f1c; /* Dark Forest Background */
+            font-family: 'Inter', sans-serif;
+            color: #ffffff; /* All text white */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .gold-text {
-            background: linear-gradient(135deg, #f5e050 0%, #d4af37 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
         .topbar {
-            position: fixed;
+            position: sticky;
             top: 0;
-            width: 100%;
+            z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 5%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            box-sizing: border-box;
-            border-bottom: none;
+            padding: 10px 5%;
+            background: #0a1f1c;
+            border-bottom: 2px solid #b8d5b0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        .logo-container { display: flex; align-items: center; gap: 20px; text-decoration: none; }
-        .logo-img { height: 40px; width: auto; filter: drop-shadow(0 0 10px var(--glam-gold)); }
+        .logo-container {
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0) invert(1); /* Makes logo white to match theme */
+        }
 
         .nav-link {
-            color: rgba(255,255,255,0.7);
+            color: #ffffff;
             text-decoration: none;
-            font-weight: 800;
+            font-weight: bold;
             margin-left: 20px;
-            font-size: 11px;
+            font-size: 14px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         main {
@@ -67,17 +58,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 120px 15px 30px; 
+            padding: 40px 15px;
         }
 
+        /* Container to house both cards side-by-side on desktop or stacked on mobile */
         .plans-container {
             display: flex;
             flex-direction: column;
             gap: 40px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 950px;
             justify-content: center;
             align-items: stretch;
+            margin-top: 20px;
         }
 
         @media (min-width: 768px) {
@@ -87,287 +80,248 @@
         }
 
         .reward-box {
-            position: relative;
-            width: 100%;
-            max-width: 480px;
-            background: #0f0f0f;
-            border: 1px solid rgba(212, 175, 55, 0.15);
-            border-radius: 32px;
-            padding: 35px 25px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05); /* Subtle dark card */
+            border: 2px solid #b8d5b0;
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            position: relative;
         }
 
-        .reward-box.premium-border {
-            border: 2px solid var(--glam-gold);
-            box-shadow: 0 0 35px rgba(212, 175, 55, 0.2);
+        /* Highlight border variant for Stream Prime to show premium hierarchy safely */
+        .reward-box.premium {
+            border-color: #ffffff;
+            background: rgba(184, 213, 176, 0.08);
         }
 
-        /* Floating Badge Design */
+        /* Most Recommended Badge */
         .recommended-badge {
             position: absolute;
-            top: -18px;
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, #f5e050 0%, #d4af37 100%);
-            color: #000000;
+            background: #b8d5b0;
+            color: #0a1f1c;
             padding: 6px 20px;
-            border-radius: 50px;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 900;
-            letter-spacing: 2px;
             text-transform: uppercase;
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
-            white-space: nowrap;
-            z-index: 10;
+            letter-spacing: 1px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .plan-header {
-            font-size: 12px;
+            font-size: 22px;
             font-weight: 800;
-            color: var(--glam-gold);
-            margin-bottom: 10px;
+            color: #b8d5b0; /* Matcha accent */
+            margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            letter-spacing: 1px;
+        }
+        
+        .reward-box.premium .plan-header {
+            color: #ffffff;
         }
 
         .price-container {
             display: flex;
             justify-content: center;
             align-items: baseline;
-            gap: 12px;
+            gap: 15px;
             margin-bottom: 5px;
         }
 
-        .old-price { font-size: 18px; color: #444; text-decoration: line-through; font-weight: 600; }
-        .new-price { font-size: 44px; font-weight: 900; color: #ffffff; letter-spacing: -2px; }
+        .old-price { font-size: 20px; color: #666; text-decoration: line-through; }
+        .new-price { font-size: 44px; font-weight: 900; color: #ffffff; } /* Big white amount */
 
         .timer-badge {
-            font-size: 10px;
-            background: rgba(255, 59, 48, 0.1);
-            color: var(--glam-red);
-            padding: 8px 18px;
+            font-size: 13px;
+            background: #e74c3c;
+            color: white;
+            padding: 6px 15px;
             border-radius: 50px;
-            font-weight: 900;
+            font-weight: bold;
             display: inline-block;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255, 59, 48, 0.4);
-            text-transform: uppercase;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+            margin-bottom: 25px;
+            align-self: center;
         }
 
         .section-title {
-            color: var(--glam-gold);
-            font-weight: 800;
+            color: #b8d5b0;
+            font-weight: 900;
             text-align: left;
-            margin: 30px 0 15px 0;
-            font-size: 10px;
+            margin: 25px 0 12px 0;
+            border-left: 4px solid #b8d5b0;
+            padding-left: 10px;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.8;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
-        .section-title::after { content: ""; flex: 1; height: 1px; background: rgba(212, 175, 55, 0.1); }
+
+        .reward-box.premium .section-title {
+            color: #ffffff;
+            border-left-color: #ffffff;
+        }
 
         .earn-item {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 16px;
-            margin: 8px 0;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            font-size: 13px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 14px;
+            margin: 6px 0;
+            border: 1px solid rgba(184, 213, 176, 0.1);
+            border-radius: 12px;
+            font-size: 14px;
             text-align: left;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.3s;
+            color: #ffffff;
         }
-        .earn-item:hover { background: rgba(212, 175, 55, 0.03); border-color: rgba(212, 175, 55, 0.2); }
 
         .earn-item i {
-            color: var(--glam-gold);
-            margin-right: 12px;
+            color: #b8d5b0;
+            margin-right: 10px;
             width: 20px;
             text-align: center;
         }
-
-        .val-pill {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-weight: 800;
+        
+        .reward-box.premium .earn-item i {
             color: #ffffff;
-            font-size: 11px;
-            white-space: nowrap;
         }
+
+        /* The white amount column */
+        .highlight-green { color: #ffffff; font-weight: 900; } 
 
         .plan-button {
             width: 100%;
-            background: linear-gradient(135deg, #f5e050 0%, #d4af37 100%);
-            color: #000;
+            background: #b8d5b0;
+            color: #0a1f1c;
             border: none;
-            border-radius: 16px;
-            padding: 20px;
-            font-weight: 800;
-            font-size: 14px;
+            border-radius: 12px;
+            padding: 18px;
+            font-weight: 900;
+            font-size: 17px;
             cursor: pointer;
-            margin-top: 30px;
+            margin-top: auto; /* Pushes button to the bottom so cards align perfectly */
             transition: 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
         }
 
-        /* POP UP STYLES */
+        .reward-box.premium .plan-button {
+            background: #ffffff;
+            color: #0a1f1c;
+        }
+
+        /* TOP-LEFT ACTIVITY FEED (MEDIUM SIZE) */
         .activity-feed-container {
             position: fixed; 
-            top: 80px; 
-            left: -400px; 
+            top: 20px; 
+            left: -400px; /* Hidden state */
             z-index: 2000; 
-            width: 90%;
-            max-width: 320px; 
-            padding: 14px;
-            background: rgba(15, 15, 15, 0.95); 
-            border-left: 4px solid var(--glam-gold); 
-            border-radius: 0 20px 20px 0;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            width: 320px; /* Medium width */
+            padding: 12px;
+            background: #0a1f1c; 
+            border: 2px solid #b8d5b0; 
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
-            backdrop-filter: blur(10px);
-            transition: left 0.8s cubic-bezier(0.19, 1, 0.22, 1); 
+            transition: left 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         }
 
-        .show-activity { left: 0; }
+        .show-activity { left: 20px; }
+        .activity-icon { margin-right: 12px; flex-shrink: 0; color: #b8d5b0; font-size: 18px; }
+        #activity-text { flex-grow: 1; font-size: 12px; line-height: 1.4; color: #ffffff; text-align: left; }
+        .stream-brand { color: #b8d5b0; font-weight: 800; }
+        .activity-user { color: #ffffff; font-weight: 700; }
+        .activity-amount { color: #ffffff; font-weight: 900; } /* White amount in notification */
+        .activity-amount.withdrawal { color: #e74c3c; }
+        .activity-time { color: rgba(255,255,255,0.4); font-size: 10px; display: block; margin-top: 2px; }
 
-        .activity-icon { 
-            width: 42px; height: 42px; 
-            background: rgba(212, 175, 55, 0.1);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin-right: 12px; flex-shrink: 0; 
-            color: #4A90E2; font-size: 20px; 
-        }
-
-        #activity-text { flex-grow: 1; font-size: 11px; line-height: 1.4; color: #ccc; text-align: left; }
-        .glam-brand { color: var(--glam-gold); font-weight: 800; font-style: italic; }
-        
-        .activity-user { color: var(--glam-gold); font-weight: 700; }
-        .activity-amount { color: var(--glam-green); font-weight: 900; }
-        .activity-amount.withdrawal { color: var(--glam-red); }
-        .activity-time { color: rgba(255,255,255,0.3); font-size: 9px; display: block; margin-top: 2px; text-transform: uppercase; }
-
-        .footer { padding: 40px; text-align: center; color: #333; font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-top: auto; }
+        .footer { padding: 30px; text-align: center; color: #555; font-size: 12px; border-top: 1px solid rgba(184, 213, 176, 0.1); margin-top: auto; }
     </style>
 </head>
 <body>
 
 <div class="topbar">
-    <a class='logo-container' href='/'>
-        <img src="logo.png" alt="G" class="logo-img">
-    </a>
-    <div class="flex">
-        <a class='nav-link' href='/'>Home</a>
-        <a class='nav-link' href='/register' style='color: var(--glam-gold)'>Register</a>
+    <div class="logo-container">
+        <img src="logo.png" alt="Stream Africa Logo" class="logo-img">
+    </div>
+    <div>
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="register.html" class="nav-link">Register</a>
     </div>
 </div>
 
 <main>
     <div class="plans-container">
         
+        <!-- STREAM REGULAR PLAN -->
         <div class="reward-box">
-            <div>
-                <div class="plan-header"><i class="fas fa-crown"></i> REGULAR PLAN ACTIVATION</div>
-                <div class="price-container">
-                    <div class="old-price">₦25,000</div>
-                    <div class="new-price">₦15,000</div>
-                </div>
-                <div class="timer-badge"><i class="fas fa-bolt mr-2"></i> LIMITED OFFER: <span class="countdown-timer">10:00</span></div>
-
-                <div class="section-title">Activation Bonuses</div>
-                <div class="earn-item">
-                    <span><i class="fas fa-gem"></i> Glam Cashback Reward</span> 
-                    <span class="val-pill">₦14,000</span>
-                </div>
-                <div class="earn-item">
-                    <span><i class="fas fa-link"></i> Glam login Bonus</span> 
-                    <span class="val-pill">₦5,000</span>
-                </div>
-
-                <div class="section-title">Daily Earning Streams</div>
-                <div class="earn-item"><span><i class="fas fa-plus-circle"></i> GlamStatus</span> <span class="val-pill">€3 = ₦4,000/view</span></div>
-                <div class="earn-item"><span><i class="fas fa-camera"></i> GlamFaceTime</span> <span class="val-pill">€3 = ₦4,000/hr</span></div>
-                <div class="earn-item"><span><i class="fas fa-moon"></i> GlamDarkMode</span> <span class="val-pill">€2 = ₦3,000/hr</span></div>
-                <div class="earn-item"><span><i class="fas fa-bolt"></i> GlamRealtime</span> <span class="val-pill">€2 = ₦3,000/hr</span></div>
+            <div class="plan-header">Stream Regular</div>
+            <div class="price-container">
+                <div class="old-price">₦25,000</div>
+                <div class="new-price">₦15,000</div>
             </div>
-            <div>
-                <button class="plan-button" onclick="window.location.href='register.html?plan=regular'">Activate Glamour</button>
-                <p class="text-[9px] text-zinc-600 mt-4 uppercase font-bold tracking-widest italic">Total Potential: €12/Hour (₦24,000)  + Global Partnerships</p>
-            </div>
+            <div class="timer-badge">OFFER EXPIRES: <span class="countdown-timer">10:00</span></div>
+
+            <div class="section-title">Earnings & Rewards</div>
+            <div class="earn-item"><span><i class="fas fa-wallet"></i> Stream Cashback</span> <span class="highlight-green">₦14,000</span></div>
+            <div class="earn-item"><span><i class="fas fa-tower-broadcast"></i> Livestream</span> <span class="highlight-green">₦2,500</span></div>
+            <div class="earn-item"><span><i class="fas fa-clapperboard"></i> Video</span> <span class="highlight-green">₦1,200</span></div>
+            <div class="earn-item"><span><i class="fas fa-music"></i> Audio</span> <span class="highlight-green">₦750</span></div>
+            <div class="earn-item"><span><i class="fas fa-camera"></i> Snap</span> <span class="highlight-green">₦500</span></div>
+            <div class="earn-item"><span><i class="fas fa-file-arrow-down"></i> File Download</span> <span class="highlight-green">₦450</span></div>
+
+            <div class="section-title">Power Features</div>
+            <div class="earn-item"><span><i class="fab fa-tiktok"></i> TikTok Network</span> <span class="highlight-green">₦50k Monthly</span></div>
+            <div class="earn-item"><span><i class="fas fa-gift"></i> WishHub</span> <span class="highlight-green">Standard Access</span></div>
+            <div class="earn-item"><span><i class="fas fa-store"></i> Stream Bazaar</span> <span class="highlight-green">Market Access</span></div>
+            <div class="earn-item"><span><i class="fas fa-graduation-cap"></i> Stream SkillUp</span> <span class="highlight-green">Digital Skills</span></div>
+
+            <button class="plan-button" onclick="window.location.href='register.html?plan=regular'">Get Regular Now</button>
         </div>
 
-        <div class="reward-box premium-border">
-            <div class="recommended-badge"><i class="fas fa-fire mr-1"></i> Most Recommended</div>
-            
-            <div>
-                <div class="plan-header" style="color: #ffffff;"><i class="fas fa-bolt gold-text"></i> PRIME PLAN ACTIVATION</div>
-                <div class="price-container">
-                    <div class="old-price">₦30,000</div>
-                    <div class="new-price gold-text">₦20,000</div>
-                </div>
-                <div class="timer-badge"><i class="fas fa-bolt mr-2"></i> LIMITED OFFER: <span class="countdown-timer">10:00</span></div>
-
-                <div class="section-title">Activation Bonuses</div>
-                <div class="earn-item">
-                    <span><i class="fas fa-gem"></i> Glam Reward Bonus</span> 
-                    <span class="val-pill" style="background: rgba(212, 175, 55, 0.2); color: var(--glam-gold);">₦20,000</span>
-                </div>
-                <div class="earn-item">
-                    <span><i class="fas fa-link"></i> Glam Link Bonus</span> 
-                    <span class="val-pill" style="background: rgba(212, 175, 55, 0.2); color: var(--glam-gold);">₦16,000</span>
-                </div>
-
-                <div class="section-title">Daily Earning Streams</div>
-                <div class="earn-item"><span><i class="fas fa-wand-magic-sparkles"></i> GlamLifestyle</span> <span class="val-pill">€7 = ₦14,000/hr</span></div>
-                <div class="earn-item"><span><i class="fas fa-file-signature"></i> GlamScript2Cash</span> <span class="val-pill">€8 = ₦16,000/script</span></div>
-                <div class="earn-item"><span><i class="fas fa-gauge-high"></i> GlamRealtime</span> <span class="val-pill">€7 = ₦14,000/hr</span></div>
-                <div class="earn-item"><span><i class="fas fa-language"></i> GlamLingua</span> <span class="val-pill">€7 = ₦14,000/hr</span></div>
-                <div class="earn-item"><span><i class="fas fa-video"></i> GlamFaceTime</span> <span class="val-pill">€10 = ₦20,000/hr</span></div>
-                <div class="earn-item"><span><i class="fas fa-briefcase"></i> GlamWorks</span> <span class="val-pill">€8 = ₦16,000/hr</span></div>
-                <div class="earn-item"><span><i class="fas fa-moon"></i> GlamDarkMode</span> <span class="val-pill">€12 = ₦24,000/hr</span></div>
+        <!-- STREAM PRIME PLAN -->
+        <div class="reward-box premium">
+            <div class="recommended-badge">Most Recommended</div>
+            <div class="plan-header">Stream Prime</div>
+            <div class="price-container">
+                <div class="old-price">₦35,000</div>
+                <div class="new-price">₦20,000</div>
             </div>
-            <div>
-                <button class="plan-button" onclick="window.location.href='register.html?plan=prime'">Activate Prime</button>
-                <p class="text-[9px] text-zinc-500 mt-4 uppercase font-bold tracking-widest italic">Total Potential: €25/Hour (₦50,000) + Global Partnerships</p>
-            </div>
+            <div class="timer-badge">OFFER EXPIRES: <span class="countdown-timer">10:00</span></div>
+
+            <div class="section-title">Earnings & Rewards</div>
+            <div class="earn-item"><span><i class="fas fa-wallet"></i> Prime Cashback</span> <span class="highlight-green">₦20,000</span></div>
+            <div class="earn-item"><span><i class="fas fa-tower-broadcast"></i> Livestream Elite</span> <span class="highlight-green">₦5,700</span></div>
+            <div class="earn-item"><span><i class="fas fa-clapperboard"></i> Video Plus</span> <span class="highlight-green">₦2,750</span></div>
+            <div class="earn-item"><span><i class="fas fa-music"></i> Audio HD</span> <span class="highlight-green">₦1,550</span></div>
+            <div class="earn-item"><span><i class="fas fa-camera"></i> Premium Snap</span> <span class="highlight-green">₦1,150</span></div>
+            <div class="earn-item"><span><i class="fas fa-file-arrow-down"></i> Unlimited Files</span> <span class="highlight-green">₦1,050</span></div>
+
+            <div class="section-title">Power Features</div>
+            <div class="earn-item"><span><i class="fab fa-tiktok"></i> TikTok Network</span> <span class="highlight-green">₦200k Monthly</span></div>
+            <div class="earn-item"><span><i class="fas fa-gift"></i> WishHub Ultra</span> <span class="highlight-green">VIP Weekly Gifts</span></div>
+            <div class="earn-item"><span><i class="fas fa-store"></i> Stream Bazaar</span> <span class="highlight-green">Market Access</span></div>
+            <div class="earn-item"><span><i class="fas fa-graduation-cap"></i> Stream SkillUp</span> <span class="highlight-green">Digital Skills</span></div>
+
+            <button class="plan-button" onclick="window.location.href='register.html?plan=prime'">Get Stream Prime</button>
         </div>
 
     </div>
 </main>
 
-<div class="footer">© 2026 GLAMOUR — SOFT LIFE DEFINED</div>
+<div class="footer">© 2026 STREAM AFRICA — ALL RIGHTS RESERVED</div>
 
 <div id="activity-feed" class="activity-feed-container">
     <div class="activity-icon">
-        <i class="fas fa-user-circle"></i>
+        <i id="act-icon" class="fas fa-circle-check"></i>
     </div>
-    <div id="activity-text">
-        Authenticating Glamour...
-    </div>
+    <div id="activity-text">Connecting to Stream Africa...</div>
 </div>
 
 <script>
@@ -387,54 +341,43 @@
         }, 1000);
     }
 
-    const NIGERIA_NAMES = ["Chinonso", "Adebayo", "Ifeoma", "Olawale", "Ngozi", "Tunde", "Chukwudi", "Amina", "Zainab", "Seyi"];
-    const EURO_NAMES = ["Maximilian", "Chloe", "Alessandro", "Sophie", "Lucas", "Elena", "Matteo", "Isabella", "Hans", "Clara"];
-    
-    const LOCATIONS = [
-        { city: "Lagos, Nigeria", euro: false },
-        { city: "London, UK", euro: true },
-        { city: "Abuja, Nigeria", box: false },
-        { city: "Berlin, Germany", euro: true },
-        { city: "Port Harcourt, Nigeria", euro: false },
-        { city: "Paris, France", euro: true },
-        { city: "Enugu, Nigeria", euro: false },
-        { city: "Madrid, Spain", euro: true }
+    const ACTIVITIES = [
+        { name: "Adesua M.", type: "withdrawn", amount: "35,000", location: "Lagos", plan: "Stream Prime", time: "just now" },
+        { name: "Obinna K.", type: "joined", amount: "14,000", location: "PH", plan: "Stream Regular", time: "2m ago" },
+        { name: "Fatima S.", type: "joined", amount: "20,000", location: "Kano", plan: "Stream Prime", time: "5m ago" },
+        { name: "Chidi N.", type: "withdrawn", amount: "15,500", location: "Enugu", plan: "Stream Regular", time: "10m ago" },
+        { name: "Tunde W.", type: "joined", amount: "14,000", location: "Ibadan", plan: "Stream Regular", time: "1m ago" },
+        { name: "Zainab A.", type: "withdrawn", amount: "52,000", location: "Abuja", plan: "Stream Prime", time: "just now" },
+        { name: "Efe J.", type: "joined", amount: "20,000", location: "Warri", plan: "Stream Prime", time: "4m ago" },
+        { name: "Amaka R.", type: "withdrawn", amount: "110,000", location: "Onitsha", plan: "Stream Prime", time: "just now" }
     ];
+    let activityIndex = 0;
 
     function cycleActivityFeed() {
         const activityElement = document.getElementById('activity-text');
         const feedContainer = document.getElementById('activity-feed');
+        const actIcon = document.getElementById('act-icon');
+        const act = ACTIVITIES[activityIndex];
         
-        const loc = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
-        const user = loc.euro ? EURO_NAMES[Math.floor(Math.random() * EURO_NAMES.length)] : NIGERIA_NAMES[Math.floor(Math.random() * NIGERIA_NAMES.length)];
-        
-        const type = Math.random() > 0.4 ? "withdrawn" : "joined";
-        let amountStr = "";
-
-        if (type === "joined") {
-            amountStr = loc.euro ? "€10" : "₦20,000";
-            activityElement.innerHTML = `
-                <span class="activity-user">${user}</span> from ${loc.city} just <span class="text-white">joined</span> with <span class="activity-amount">${amountStr}</span> to start their <span class="glam-brand">GLAMOUR</span> journey!
-                <span class="activity-time">Just now</span>`;
+        if (act.type === 'joined') {
+            actIcon.className = "fas fa-user-plus";
+            activityElement.innerHTML = `<span class="activity-user">${act.name}</span> (${act.location}) activated <span class="stream-brand">${act.plan}</span> and unlocked <span class="activity-amount">₦${act.amount}</span> rewards!<span class="activity-time">${act.time}</span>`;
         } else {
-            const nairAmt = (Math.floor(Math.random() * 45) + 5) * 2000;
-            amountStr = loc.euro ? "€" + (nairAmt / 2000) : "₦" + nairAmt.toLocaleString();
-            activityElement.innerHTML = `
-                <span class="activity-user">${user}</span> from ${loc.city} just <span class="text-white">withdrew</span> <span class="activity-amount withdrawal">${amountStr}</span> from <span class="glam-brand">GLAMOUR</span>!
-                <span class="activity-time">2 mins ago</span>`;
+            actIcon.className = "fas fa-money-bill-transfer";
+            activityElement.innerHTML = `<span class="activity-user">${act.name}</span> (${act.location}) withdrew <span class="activity-amount withdrawal">₦${act.amount}</span> via <span class="stream-brand">${act.plan}</span>!<span class="activity-time">${act.time}</span>`;
         }
 
         feedContainer.classList.add('show-activity');
         setTimeout(() => {
             feedContainer.classList.remove('show-activity');
+            activityIndex = (activityIndex + 1) % ACTIVITIES.length;
         }, 5000); 
     }
 
     window.onload = function () {
-        const timers = document.querySelectorAll('.countdown-timer');
-        startTimer(10 * 60, timers);
-        setTimeout(cycleActivityFeed, 3000);
-        setInterval(cycleActivityFeed, 12000); 
+        startTimer(10 * 60, document.querySelectorAll('.countdown-timer'));
+        setTimeout(cycleActivityFeed, 2000);
+        setInterval(cycleActivityFeed, 10000);
     };
 </script>
 </body>
