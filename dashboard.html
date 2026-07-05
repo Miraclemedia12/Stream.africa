@@ -346,15 +346,15 @@
             color: var(--stream-green);        
         }
 
-        .activation-modal, .details-modal {            
+        .activation-modal {            
             display: none;            
             position: fixed;            
             top: 0;            
             left: 0;            
             width: 100%;            
             height: 100%;            
-            background: rgba(10, 31, 28, 0.9);            
-            backdrop-filter: blur(12px);            
+            background: rgba(10, 31, 28, 0.85);            
+            backdrop-filter: blur(8px);            
             z-index: 2000;            
             align-items: center;            
             justify-content: center;        
@@ -426,6 +426,15 @@
         .cancel-link:hover {            
             text-decoration: underline;            
             color: var(--stream-green);        
+        }
+
+        /* FULL SCREEN ACCT DETAILS MODAL */
+        .details-modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--stream-dark); z-index: 3000;
+            flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; overflow-y: auto;
         }
 
         @media (max-width: 600px) {            
@@ -553,29 +562,60 @@
     </div>
 
     <div class="details-modal" id="detailsModal">
-        <div class="w-full max-w-md bg-[#0d1211] border border-[#b8d5b0] rounded-[32px] p-8 text-center mx-4 shadow-2xl relative">
-            <div class="text-[#b8d5b0] text-4xl mb-4"><i class="fas fa-university"></i></div>
-            <h2 class="text-xl font-extrabold tracking-wide uppercase text-[#b8d5b0] mb-2">Direct Bank Transfer</h2>
-            <p class="text-xs text-white/60 mb-6">Make your payment manually to the admin account below to activate your account modules.</p>
-            
-            <div class="bg-white/5 border border-[#b8d5b0]/20 rounded-2xl p-5 text-left space-y-4 mb-6">
-                <div>
-                    <span class="block text-[10px] uppercase tracking-wider text-white/40">Bank Name</span>
-                    <strong id="displayBankName" class="text-sm font-bold text-white tracking-wide">Loading Bank...</strong>
+        <div class="w-full max-w-md mx-auto bg-[#0d1211] border border-[#b8d5b0]/30 rounded-3xl p-6 md:p-8 shadow-2xl relative">
+            <button id="closeDetailsBtn" class="absolute top-5 right-5 text-white/50 hover:text-white text-xl">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-full bg-[#b8d5b0]/10 flex items-center justify-center text-[#b8d5b0] text-2xl mx-auto mb-3">
+                    <i class="fas fa-university"></i>
                 </div>
-                <div>
-                    <span class="block text-[10px] uppercase tracking-wider text-white/40">Account Number</span>
-                    <strong id="displayAccountNumber" class="text-lg font-black text-[#b8d5b0] tracking-widest">Loading Account...</strong>
+                <h3 class="text-xl font-extrabold uppercase text-[#b8d5b0] tracking-wide">Direct Bank Transfer</h3>
+                <p class="text-xs text-white/60 mt-1">Transfer the exact fee structure to the configs below</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+                    <span class="text-[10px] uppercase font-bold tracking-widest text-white/50">Amount to Remit</span>
+                    <div class="text-3xl font-black text-[#b8d5b0] mt-1 flex items-center justify-center gap-2">
+                        <span id="popAmount">₦15,000</span>
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('popAmount').innerText.replace('₦','').replace(',','')); window.showStreamAlert('Amount copied!')" class="text-xs text-white/40 hover:text-[#b8d5b0]"><i class="fas fa-copy"></i></button>
+                    </div>
                 </div>
-                <div>
-                    <span class="block text-[10px] uppercase tracking-wider text-white/40">Account Name</span>
-                    <strong id="displayAccountName" class="text-sm font-bold text-white tracking-wide">Loading Name...</strong>
+
+                <div class="space-y-3">
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-white/40 block">Bank Institution</span>
+                            <b class="text-sm font-bold tracking-wide text-white" id="configBank">Loading Bank...</b>
+                        </div>
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('configBank').innerText); window.showStreamAlert('Bank name copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-white/40 block">Account Number</span>
+                            <b class="text-lg font-black tracking-wider text-[#b8d5b0]" id="configNumber">Loading Details...</b>
+                        </div>
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('configNumber').innerText); window.showStreamAlert('Account number copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-white/40 block">Account Holder Name</span>
+                            <b class="text-sm font-bold tracking-wide text-white" id="configName">Loading Name...</b>
+                        </div>
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('configName').innerText); window.showStreamAlert('Account name copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
+                    </div>
                 </div>
             </div>
 
-            <button class="activate-now-btn" id="madePaymentBtn">I have made payment</button>
-            <div class="mt-3">
-                <a class="cancel-link text-xs opacity-50" id="closeDetailsLink">Go Back</a>
+            <div class="mt-6 space-y-3">
+                <button id="madeTransferBtn" class="w-full bg-[#b8d5b0] text-[#0a1f1c] font-black py-4 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider">
+                    I Have Made Transfer
+                </button>
+                <p class="text-[10px] text-center text-white/40 leading-relaxed px-2">Clicking verification logs configuration credentials. Direct secure channel redirects manually to validation manager.</p>
             </div>
         </div>
     </div>
@@ -583,7 +623,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
      const firebaseConfig = {
         apiKey: "AIzaSyCBasWo7DVLYV6WiP7TKEayMXLPeH3JLMs",
@@ -599,9 +639,8 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Dynamic configuration placeholders mapped directly from admin setup
-    let adminTelegramLink = "https://t.me/your_telegram_username"; 
     let userPlanType = "regular";
+    let telegramUsername = "Miraclemedia"; // Default backup fallback handle
 
     window.showStreamAlert = (msg, type = 'info') => {
         const toast = document.getElementById('streamToast');
@@ -628,6 +667,21 @@
             }
         }, 60);
     };
+
+    // ACTIVE REALT-TIME SYNC FOR ADMIN CONFIGS (BANK DETAILS & USERNAME)
+    onSnapshot(doc(db, "configs", "paymentDetails"), (snapshot) => {
+        if (snapshot.exists()) {
+            const configData = snapshot.data();
+            document.getElementById('configBank').textContent = configData.bankName || "Not Configured";
+            document.getElementById('configNumber').textContent = configData.accountNumber || "Not Configured";
+            document.getElementById('configName').textContent = configData.accountName || "Not Configured";
+            if (configData.telegramUsername) {
+                telegramUsername = configData.telegramUsername.replace('@', '');
+            }
+        }
+    }, (error) => {
+        console.error("Error streaming admin configs matrix:", error);
+    });
 
     // ACTIVE DATABASE SYNC AND MAPPING PROTOCOL
     onAuthStateChanged(auth, async (user) => {
@@ -663,6 +717,7 @@
                     document.getElementById('boostBadge').textContent = 'x15 BOOST';
                     document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x15 boost (Premium Plus benefit)';
                     document.getElementById('modalMessage').textContent = 'Activate your Stream Prime Plan account (₦20,000) to unlock VIP rewards, x15 boost and higher withdrawal limits.';
+                    document.getElementById('popAmount').textContent = '₦20,000';
                 } else {
                     document.getElementById('earningsAmount').textContent = '₦14,000';
                     document.getElementById('planBadge').textContent = 'Regular Plan';
@@ -670,13 +725,8 @@
                     document.getElementById('boostBadge').textContent = 'x10 BOOST';
                     document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x10 boost on StreamStatus — paid in ₦';
                     document.getElementById('modalMessage').textContent = 'Complete your Stream Fee payment (₦15,000) to unlock withdrawals and all Stream modules.';
+                    document.getElementById('popAmount').textContent = '₦15,000';
                 }
-
-                // Map admin details saved across your dashboard system directly here
-                if (data.bankName) document.getElementById('displayBankName').textContent = data.bankName;
-                if (data.accountNumber) document.getElementById('displayAccountNumber').textContent = data.accountNumber;
-                if (data.accountName) document.getElementById('displayAccountName').textContent = data.accountName;
-                if (data.telegramUsername) adminTelegramLink = `https://t.me/PriscaOfficialRegistrationTeam', '')}`;
 
                 // If account is already processed and marked true, show full tracking data values
                 const storagePaidKey = localStorage.getItem(`paid_${user.uid}`);
@@ -695,6 +745,7 @@
         }
     });
 
+    // MODAL CONTROL INTERACTION SCHEMES
     const modal = document.getElementById('activationModal');
     const detailsModal = document.getElementById('detailsModal');
 
@@ -702,28 +753,26 @@
     const openModal = () => { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; };
     
     const openDetailsModal = () => {
-        modal.style.display = 'none';
+        closeModal(); // Close first dashboard alert layout popup
         detailsModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     };
-    const closeDetailsModal = () => {
-        detailsModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    };
-
+    const closeDetailsModal = () => { detailsModal.style.display = 'none'; document.body.style.overflow = 'auto'; };
+    
     document.querySelectorAll('.modal-trigger').forEach(trigger => trigger.addEventListener('click', openModal));
     document.getElementById('cancelModalLink').addEventListener('click', closeModal);
     
-    // Wire up actions transitions perfectly between popup sequences
+    // Connect "Pay Stream Fee" button directly to full screen display view
     document.getElementById('activateNowBtn').addEventListener('click', openDetailsModal);
-    document.getElementById('closeDetailsLink').addEventListener('click', closeDetailsModal);
+    document.getElementById('closeDetailsBtn').addEventListener('click', closeDetailsModal);
+
+    // I Have Made Transfer Verification Procedure Action Link
+    document.getElementById('madeTransferBtn').addEventListener('click', () => {
+        window.location.href = `https://t.me/${telegramUsername}`;
+    });
 
     window.addEventListener('click', (e) => { 
         if (e.target === modal) closeModal(); 
-        if (e.target === detailsModal) closeDetailsModal();
-    });
-
-    document.getElementById('madePaymentBtn').addEventListener('click', () => {
-        window.location.href = adminTelegramLink;
     });
 
     document.getElementById('logout-panel-btn').addEventListener('click', async () => {
