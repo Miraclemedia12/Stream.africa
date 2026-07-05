@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;600;700;800&display=swap');
 
         :root { --stream-green: #b8d5b0; --stream-dark: #0a1f1c; --stream-red: #ff4b4b; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -206,9 +206,16 @@
             btn.disabled = false;
             btn.innerText = "REGISTER";
             
-            let errorMsg = "Registration Failed";
-            if(error.code === 'auth/email-already-in-use') errorMsg = "Email already linked to an account, proceed to login";
-            if(error.code === 'auth/weak-password') errorMsg = "Security key too weak";
+            let errorMsg = "System timeout. Please check your connection.";
+            if (error.code === 'auth/email-already-in-use') {
+                errorMsg = "Email already linked to an account, proceed to login";
+            } else if (error.code === 'auth/weak-password') {
+                errorMsg = "Security key too weak";
+            } else if (error.code === 'auth/invalid-email') {
+                errorMsg = "The email address layout is formatted incorrectly.";
+            } else if (error.code === 'auth/network-request-failed') {
+                errorMsg = "Network connection interrupted. Try again.";
+            }
             
             showStreamAlert(errorMsg, "error");
         }
