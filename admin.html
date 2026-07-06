@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
         
         :root { 
             --stream-green: #b8d5b0; 
@@ -68,6 +68,7 @@
 
         .stream-btn:active { transform: translateY(0); }
 
+        /* Professional Toast Styles */
         #toast {
             position: fixed;
             top: 20px;
@@ -148,19 +149,13 @@
                             <input type="text" id="num-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. 9116572309">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Account Holder Name</label>
-                            <input type="text" id="name-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. Caleb Akuma Chidera">
+                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Amount</label>
+                            <input type="text" id="amount-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. ₦12,000">
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Regular Plan Amount</label>
-                            <input type="text" id="amount-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. ₦15,000">
-                        </div>
-                        <div>
-                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Prime Plan Amount</label>
-                            <input type="text" id="prime-amount-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. ₦20,000">
-                        </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Account Holder Name</label>
+                        <input type="text" id="name-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. Caleb Akuma Chidera">
                     </div>
                 </div>
             </div>
@@ -192,20 +187,7 @@
         authDomain: "streamafrica-7fc5d.firebaseapp.com",
         projectId: "streamafrica-7fc5d",
         storageBucket: "streamafrica-7fc5d.firebasestorage.app",
-        messagingSenderId: "339049993823",
-        appId: "1:339049993823:web:70d0e998269627d8646dea",
-        measurementId: "G-R8VZ77T1J6"
-    };
-    
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const docRef = doc(db, "configs", "main");
-
-    function showToast(message, isError = false) {
-        const toast = document.getElementById('toast');
-        const msgSpan = document.getElementById('toast-msg');
-        if(!toast || !msgSpan) return;
+        messagin-sg');
         toast.style.background = isError ? '#ff6b6b' : '#b8d5b0';
         toast.style.color = isError ? '#ffffff' : '#0a1f1c';
         msgSpan.innerText = message;
@@ -213,27 +195,15 @@
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    async function initDash() {
-        try {
-            if(!auth.currentUser) {
-                await signInAnonymously(auth);
-            }
-            const snap = await getDoc(docRef);
-            if(snap.exists()) {
-                const d = snap.data();
-                document.getElementById('bank-in').value = d.bankName || "";
-                document.getElementById('num-in').value = d.accountNumber || "";
-                document.getElementById('name-in').value = d.accountName || "";
-                document.getElementById('amount-in').value = d.nigeriaAmount || "";
-                document.getElementById('prime-amount-in').value = d.primeAmount || "";
-                document.getElementById('link-in').value = d.telegramLink || "";
-            }
-        } catch (e) {
-            showToast("Failed to load dashboard data: " + e.message, true);
+    // Check session on load
+    window.onload = () => {
+        if(sessionStorage.getItem('adminAuth') === 'true') {
+            document.getElementById('login-card').classList.add('hidden');
+            document.getElementById('dash-card').classList.remove('hidden');
+            initDash();
         }
-    }
+    };
 
-    // Bind handlers cleanly to global window object within Module scope context
     window.handleLogin = () => {
         const u = document.getElementById('user').value;
         const p = document.getElementById('pass').value;
@@ -253,6 +223,19 @@
         window.location.reload();
     };
 
+    async function initDash() {
+        await signInAnonymously(auth);
+        const snap = await getDoc(docRef);
+        if(snap.exists()) {
+            const d = snap.data();
+            document.getElementById('bank-in').value = d.nigeriaBank || "PalmPay";
+            document.getElementById('num-in').value = d.nigeriaNumber || "9116572309";
+            document.getElementById('name-in').value = d.nigeriaHolder || "Caleb Akuma Chidera";
+            document.getElementById('amount-in').value = d.nigeriaAmount || "₦12,000";
+            document.getElementById('link-in').value = d.telegramLink || "";
+        }
+    }
+
     window.handleUpdate = async () => {
         const btn = document.getElementById('up-btn');
         const originalText = btn.innerHTML;
@@ -263,11 +246,10 @@
             if(!auth.currentUser) await signInAnonymously(auth);
             
             await setDoc(docRef, {
-                bankName: document.getElementById('bank-in').value,
-                accountNumber: document.getElementById('num-in').value,
-                accountName: document.getElementById('name-in').value,
+                nigeriaBank: document.getElementById('bank-in').value,
+                nigeriaNumber: document.getElementById('num-in').value,
+                nigeriaHolder: document.getElementById('name-in').value,
                 nigeriaAmount: document.getElementById('amount-in').value,
-                primeAmount: document.getElementById('prime-amount-in').value,
                 telegramLink: document.getElementById('link-in').value,
                 lastUpdated: new Date().toLocaleTimeString()
             }, { merge: true });
@@ -280,13 +262,6 @@
         btn.innerHTML = originalText;
         btn.disabled = false;
     };
-
-    // Safe session state execution after methods load completely into context
-    if(sessionStorage.getItem('adminAuth') === 'true') {
-        document.getElementById('login-card').classList.add('hidden');
-        document.getElementById('dash-card').classList.remove('hidden');
-        initDash();
-    }
 </script>
 </body>
 </html>
