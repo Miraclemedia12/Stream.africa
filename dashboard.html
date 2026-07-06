@@ -359,6 +359,7 @@
             align-items: center;            
             justify-content: center;        
         }
+
         .activation-content {            
             background: #0d1211;            
             backdrop-filter: blur(16px);            
@@ -366,7 +367,7 @@
             border: 1px solid var(--stream-green);            
             width: 92%;            
             max-width: 400px;            
-            padding: 35px 25px;            
+            padding: 35px 25px;
             text-align: center;            
             border-radius: 25px;            
             box-shadow: 0 25px 40px rgba(0, 0, 0, 0.6);        
@@ -469,7 +470,7 @@
         <div id="toastBar" class="toast-progress"></div>
     </div>
 
-    <div class="dashboard-container">        
+    <div class="dashboard-container" id="mainDashboardContainer" style="display: none;">        
         <div class="dashboard-header">            
             <div class="welcome-section">                
                 <div class="welcome-text">                    
@@ -528,7 +529,7 @@
         </div>    
     </div>
 
-    <div class="action-buttons">        
+    <div class="action-buttons" id="mainNavigationButtons" style="display: none;">        
         <button class="action-btn active modal-trigger">            
             <div class="link-icon"><i class="fas fa-bolt"></i></div><span>Activate</span>        
         </button>        
@@ -549,8 +550,12 @@
     <div class="activation-modal" id="activationModal">        
         <div class="activation-content">            
             <div class="activation-icon"><i class="fas fa-gem"></i></div>            
-            <p class="activation-message" id="modalMessage">Complete your Stream Fee payment to unlock withdrawals and all Stream modules.</p>            
-            <button class="activate-now-btn" id="activateNowBtn">Pay Stream Fee</button> 
+            <h3 class="activation-title">Premium Access Required</h3>
+            <p class="activation-message" id="modalMessage">Complete your configuration fee payment to unlock withdrawals and all system modules.</p>            
+            <button class="activate-now-btn" id="activateNowBtn">Proceed to Payment</button> 
+            <div class="mt-2">
+                <span class="cancel-link" id="closeModalBtn">Maybe Later</span>
+            </div>
         </div>
     </div>
 
@@ -589,9 +594,10 @@
         }
     }
 
-    // AUTH STATE CHECKING & DATA LOADING
+    // AUTH ROUTE GUARD PROTOCOL
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
+            // Strictly block any further render and redirect out instantly
             window.location.href = 'login.html';
             return;
         }
@@ -626,20 +632,37 @@
                     }
                 });
 
+                // User successfully verified -> safe to unhide dashboard layout now
+                document.getElementById('mainDashboardContainer').style.display = 'block';
+                document.getElementById('mainNavigationButtons').style.display = 'grid';
+
+            } else {
+                // Documents corrupted/not found -> treat as dangerous access
+                window.location.href = 'login.html';
             }
         } catch (err) {
             console.error("Initialization Error: ", err);
+            window.location.href = 'login.html';
         }
     });
 
-    // REDIRECT PROTOCOL FOR ALL BLOCKED FEATURES
+    // INTERCEPT PROTOCOL FOR ALL BLOCKED FEATURES
+    // Shows your beautiful pop-up wrapper instead of jumping lines directly to payment link
     document.querySelectorAll('.modal-trigger').forEach(element => {
         element.addEventListener('click', (e) => {
             e.preventDefault();
-            window.location.href = 'payment.html';
+            document.getElementById('activationModal').style.display = 'flex';
         });
     });
 
+    // POPUP CLOSURE CONTROLLER (Maybe Later)
+    if(document.getElementById('closeModalBtn')) {
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('activationModal').style.display = 'none';
+        });
+    }
+
+    // REDIRECT CONFIRMATION SCRIPT (When they finally hit the CTA button inside your popup)
     if(document.getElementById('activateNowBtn')) {
         document.getElementById('activateNowBtn').addEventListener('click', () => {
             window.location.href = 'payment.html'; 
