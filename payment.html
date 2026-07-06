@@ -215,7 +215,7 @@
 
     let vendorLink = "https://t.me/PriscaOfficialRegistrationTeam";
     let livePrices = { regular: "₦15,000", prime: "₦20,000" };
-    let userPlan = "regular";
+    let userPlan = "regular"; "prime";
 
     function setupUI() {
         const selected = localStorage.getItem('selected_country') || 'nigeria';
@@ -253,7 +253,7 @@
                 onSnapshot(doc(db, "users", uid), (userSnap) => {
                     if (userSnap.exists()) {
                         const userData = userSnap.data();
-                        userPlan = userData.selectedPlan ? userData.selectedPlan.trim().toLowerCase() : 'regular';
+                        userPlan = userData.selectedPlan ? userData.selectedPlan.trim().toLowerCase() : 'regular , prime';
                         updatePriceUI();
                     }
                 });
