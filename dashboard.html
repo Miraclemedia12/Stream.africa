@@ -675,9 +675,9 @@
     onSnapshot(doc(db, "configs", "main"), (snapshot) => {
         if (snapshot.exists()) {
             const configData = snapshot.data();
-            document.getElementById('configBankName').textContent = configData.bankName || "Not Configured";
-            document.getElementById('configsaccountNumber').textContent = configData.accountNumber || "Not Configured";
-            document.getElementById('configsaccountName').textContent = configData.accountName || "Not Configured";
+            document.getElementById('BankName').textContent = configData.bankName || "Not Configured";
+            document.getElementById('accountNumber').textContent = configData.accountNumber || "Not Configured";
+            document.getElementById('accountName').textContent = configData.accountName || "Not Configured";
             
             if (configData.telegramLink) {
                 telegramRedirectUrl = configData.telegramLink;
