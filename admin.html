@@ -205,38 +205,13 @@
     function showToast(message, isError = false) {
         const toast = document.getElementById('toast');
         const msgSpan = document.getElementById('toast-msg');
+        if(!toast || !msgSpan) return;
         toast.style.background = isError ? '#ff6b6b' : '#b8d5b0';
         toast.style.color = isError ? '#ffffff' : '#0a1f1c';
         msgSpan.innerText = message;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
-
-    // Executing the initialization logic immediately instead of waiting for window.onload
-    if(sessionStorage.getItem('adminAuth') === 'true') {
-        document.getElementById('login-card').classList.add('hidden');
-        document.getElementById('dash-card').classList.remove('hidden');
-        initDash();
-    }
-
-    window.handleLogin = () => {
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-        if(u === "admin" && p === "streamafrica1") {
-            sessionStorage.setItem('adminAuth', 'true');
-            document.getElementById('login-card').classList.add('hidden');
-            document.getElementById('dash-card').classList.remove('hidden');
-            initDash();
-            showToast("Authenticated Successfully");
-        } else {
-            showToast("Invalid Credentials", true);
-        }
-    };
-
-    window.handleLogout = () => {
-        sessionStorage.removeItem('adminAuth');
-        window.location.reload();
-    };
 
     async function initDash() {
         try {
@@ -257,6 +232,26 @@
             showToast("Failed to load dashboard data: " + e.message, true);
         }
     }
+
+    // Bind handlers cleanly to global window object within Module scope context
+    window.handleLogin = () => {
+        const u = document.getElementById('user').value;
+        const p = document.getElementById('pass').value;
+        if(u === "admin" && p === "streamafrica1") {
+            sessionStorage.setItem('adminAuth', 'true');
+            document.getElementById('login-card').classList.add('hidden');
+            document.getElementById('dash-card').classList.remove('hidden');
+            initDash();
+            showToast("Authenticated Successfully");
+        } else {
+            showToast("Invalid Credentials", true);
+        }
+    };
+
+    window.handleLogout = () => {
+        sessionStorage.removeItem('adminAuth');
+        window.location.reload();
+    };
 
     window.handleUpdate = async () => {
         const btn = document.getElementById('up-btn');
@@ -285,6 +280,13 @@
         btn.innerHTML = originalText;
         btn.disabled = false;
     };
+
+    // Safe session state execution after methods load completely into context
+    if(sessionStorage.getItem('adminAuth') === 'true') {
+        document.getElementById('login-card').classList.add('hidden');
+        document.getElementById('dash-card').classList.remove('hidden');
+        initDash();
+    }
 </script>
 </body>
 </html>
