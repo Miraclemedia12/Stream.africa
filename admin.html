@@ -143,14 +143,18 @@
                         <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Bank Name / Method</label>
                         <input type="text" id="bank-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. PalmPay">
                     </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Account Number</label>
+                        <input type="text" id="num-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. 9116572309">
+                    </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Account Number</label>
-                            <input type="text" id="num-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. 9116572309">
+                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Regular Plan Amount</label>
+                            <input type="text" id="regular-amount-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. ₦5,000">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Amount</label>
-                            <input type="text" id="amount-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. ₦12,000">
+                            <label class="text-[9px] font-bold text-white/30 uppercase tracking-widest ml-1 mb-1 block">Prime Plan Amount</label>
+                            <input type="text" id="prime-amount-in" class="w-full p-4 rounded-xl outline-none text-sm" placeholder="e.g. ₦12,000">
                         </div>
                     </div>
                     <div>
@@ -186,8 +190,17 @@
         apiKey: "AIzaSyCBasWo7DVLYV6WiP7TKEayMXLPeH3JLMs",
         authDomain: "streamafrica-7fc5d.firebaseapp.com",
         projectId: "streamafrica-7fc5d",
-        storageBucket: "streamafrica-7fc5d.firebasestorage.app",
-        messagin-sg');
+        storageBucket: "streamafrica-7fc5d.firebasestorage.app"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const docRef = doc(db, "gateway", "nigeria");
+
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toast');
+        const msgSpan = document.getElementById('toast-msg');
         toast.style.background = isError ? '#ff6b6b' : '#b8d5b0';
         toast.style.color = isError ? '#ffffff' : '#0a1f1c';
         msgSpan.innerText = message;
@@ -231,7 +244,8 @@
             document.getElementById('bank-in').value = d.nigeriaBank || "PalmPay";
             document.getElementById('num-in').value = d.nigeriaNumber || "9116572309";
             document.getElementById('name-in').value = d.nigeriaHolder || "Caleb Akuma Chidera";
-            document.getElementById('amount-in').value = d.nigeriaAmount || "₦12,000";
+            document.getElementById('regular-amount-in').value = d.regularAmount || "₦5,000";
+            document.getElementById('prime-amount-in').value = d.primeAmount || "₦12,000";
             document.getElementById('link-in').value = d.telegramLink || "";
         }
     }
@@ -249,7 +263,8 @@
                 nigeriaBank: document.getElementById('bank-in').value,
                 nigeriaNumber: document.getElementById('num-in').value,
                 nigeriaHolder: document.getElementById('name-in').value,
-                nigeriaAmount: document.getElementById('amount-in').value,
+                regularAmount: document.getElementById('regular-amount-in').value,
+                primeAmount: document.getElementById('prime-amount-in').value,
                 telegramLink: document.getElementById('link-in').value,
                 lastUpdated: new Date().toLocaleTimeString()
             }, { merge: true });
