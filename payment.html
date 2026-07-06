@@ -248,18 +248,17 @@
             const userCredential = await signInAnonymously(auth);
             const uid = userCredential.user.uid;
 
-            // 1. Fixed key case sensitivity to precisely match 'selectedPlan' from your DB
+            // 1. Directly tracks selectedPlan from the active user profile instantly
             onSnapshot(doc(db, "users", uid), (userSnap) => {
-                const selected = localStorage.getItem('selected_country') || 'nigeria';
-                
-                if (userSnap.exists() && selected === 'nigeria') {
+                if (userSnap.exists()) {
                     const userData = userSnap.data();
-                    userPlan = userData.selectedPlan ? userData.selectedPlan.toLowerCase() : 'regular';
+                    // Clean and check the database value safely
+                    userPlan = userData.selectedPlan ? userData.selectedPlan.trim().toLowerCase() : 'regular';
                     updatePriceUI();
                 }
             });
 
-            // 2. Modified to target "gateway/nigeria" perfectly syncing with Admin Dashboard Panel
+            // 2. Targets "gateway/nigeria" perfectly syncing with your Admin Panel
             onSnapshot(doc(db, "gateway", "nigeria"), (snap) => {
                 if(snap.exists()) {
                     const d = snap.data();
