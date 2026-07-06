@@ -248,13 +248,13 @@
             const userCredential = await signInAnonymously(auth);
             const uid = userCredential.user.uid;
 
-            // 1. Listen directly to this unique user's specific document for their plan selection
+            // 1. Fixed key case sensitivity to precisely match 'selectedPlan' from your DB
             onSnapshot(doc(db, "users", uid), (userSnap) => {
                 const selected = localStorage.getItem('selected_country') || 'nigeria';
                 
                 if (userSnap.exists() && selected === 'nigeria') {
                     const userData = userSnap.data();
-                    userPlan = userData.selectedplan ? userData.selectedplan.toLowerCase() : 'regular';
+                    userPlan = userData.selectedPlan ? userData.selectedPlan.toLowerCase() : 'regular';
                     updatePriceUI();
                 }
             });
