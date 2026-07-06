@@ -92,7 +92,8 @@
         }
         .btn-main:active { transform: scale(0.96); }
 
-        #overlay { position: fixed; inset: 0; background: rgba(10, 31, 28, 0.98); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; backdrop-filter: blur(10px); }
+        /* Changed to display: flex by default so it blocks the page until verified */
+        #overlay { position: fixed; inset: 0; background: rgba(10, 31, 28, 0.98); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; backdrop-filter: blur(10px); }
         .loader-ring { width: 60px; height: 60px; border: 4px solid rgba(184, 213, 176, 0.1); border-top: 4px solid var(--stream-green); border-radius: 50%; animation: spin 0.8s linear infinite; }
         
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -215,7 +216,17 @@
 
     let vendorLink = "https://t.me/PriscaOfficialRegistrationTeam";
     let livePrices = { regular: "₦15,000", prime: "₦20,000" };
-    let userPlan = "regular"; "prime";
+    let userPlan = "regular"; // Fixed typo string here
+
+    // Tracking variables to ensure everything is fetched before hiding loader
+    let userLoaded = false;
+    let gatewayLoaded = false;
+
+    function checkLoadingComplete() {
+        if (userLoaded && gatewayLoaded) {
+            document.getElementById('overlay').style.display = 'none';
+        }
+    }
 
     function setupUI() {
         const selected = localStorage.getItem('selected_country') || 'nigeria';
@@ -244,26 +255,39 @@
     async function initPage() {
         setupUI();
         
-        // Listen directly for the authenticated user session instead of signing in anonymously
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const uid = user.uid;
                 
-                // Tracks selectedPlan from the active logged-in profile instantly
+                // Track user's plan safely from database
                 onSnapshot(doc(db, "users", uid), (userSnap) => {
                     if (userSnap.exists()) {
                         const userData = userSnap.data();
-                        userPlan = userData.selectedPlan ? userData.selectedPlan.trim().toLowerCase() : 'regular , prime';
+                        // Catches either 'selectedPlan' or 'plan' field to prevent database field mismatches
+                        const rawPlan = userData.selectedPlan || userData.plan || 'regular';
+                        userPlan = rawPlan.trim().toLowerCase();
+                        
                         updatePriceUI();
+                        userLoaded = true;
+                        checkLoadingComplete();
+                    } else {
+                        // Fallback if document doesn't exist
+                        userPlan = 'regular';
+                        updatePriceUI();
+                        userLoaded = true;
+                        checkLoadingComplete();
                     }
                 });
             } else {
                 console.warn("No user session found. Make sure you are logged in!");
+                // Force load even if auth fails so the page isn't permanently stuck
+                userLoaded = true;
+                checkLoadingComplete();
             }
         });
 
         try {
-            // Targets "gateway/nigeria" perfectly syncing with your Admin Panel
+            // Sync with your Admin Dashboard parameters 
             onSnapshot(doc(db, "gateway", "nigeria"), (snap) => {
                 if(snap.exists()) {
                     const d = snap.data();
@@ -280,9 +304,15 @@
                         
                         updatePriceUI();
                     }
+                    gatewayLoaded = true;
+                    checkLoadingComplete();
                 }
             });
-        } catch(e) { console.error("Cloud Error:", e); }
+        } catch(e) { 
+            console.error("Cloud Error:", e); 
+            gatewayLoaded = true;
+            checkLoadingComplete();
+        }
     }
 
     window.onload = initPage;
