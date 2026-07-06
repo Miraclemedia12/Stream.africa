@@ -696,7 +696,7 @@
             const configData = snapshot.data();
             dbConfigCache = configData; // Store globally to read current snapshot field values inside auth state
             
-            document.getElementById('BankName').textContent = configData.bankName || "Not Configured";
+            document.getElementById('BankName').textContent = configData.bankName || "Configured";
             document.getElementById('accountNumber').textContent = configData.accountNumber || "Not Configured";
             document.getElementById('accountName').textContent = configData.accountName || "Not Configured";
             
