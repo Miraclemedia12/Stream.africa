@@ -589,7 +589,7 @@
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
                         <div>
                             <span class="text-[10px] uppercase font-bold text-white/40 block">Bank Institution</span>
-                            <p id="bank-name-display" class="text-lg font-bold tracking-tight">...</p>
+                            <span id="displayBankName" class="text-sm font-bold text-white tracking-wide">Fetching Bank...</span>
                         </div>
                         <button onclick="navigator.clipboard.writeText(document.getElementById('BankName').innerText); window.showStreamAlert('Bank name copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
                     </div>
@@ -643,39 +643,10 @@
     let userPlanType = "regular";
     let telegramRedirectUrl = "https://t.me/Miraclemedia"; // Default backup fallback URL
     
-    // Global active cache objects to sync state between both snapshot listeners seamlessly
+    // Global active cache objects to sync state seamlessly
     let dbConfigCache = null;
+    let snapshotListenerUnsubscribe = null; // To prevent duplicate memory leaks
 
-    window.showStreamAlert = (msg, type = 'info') => {
-        const toast = document.getElementById('streamToast');
-        const title = document.getElementById('toastTitle');
-        if (!toast) return; 
-        
-        document.getElementById('toastMsg').innerText = msg;
-        
-        if(type === 'error') {
-            toast.classList.add('error');
-            title.innerText = "SECURITY BREACH";
-        } else {
-            toast.classList.remove('error');
-            title.innerText = "SYSTEM PROTOCOL";
-        }
-
-        toast.classList.add('show');
-        let width = 100;
-        const interval = setInterval(() => {
-            width -= 2;
-            const bar = document.getElementById('toastBar');
-            if(bar) bar.style.width = width + '%';
-            if (width <= 0) {
-                clearInterval(interval);
-                toast.classList.remove('show');
-                setTimeout(() => { if(bar) bar.style.width = '100%'; }, 500);
-            }
-        }, 60);
-    };
-
-    // Helper evaluation framework function to keep the user's plan amounts completely dynamic
     function refreshDynamicAmounts() {
         if (!dbConfigCache) return;
         const isPlus = (userPlanType === 'prime');
@@ -683,34 +654,100 @@
         if (isPlus) {
             const dynamicPrime = dbConfigCache.primeAmount || "₦20,000";
             if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = `Activate your Stream Prime Plan account (${dynamicPrime}) to unlock VIP rewards, x15 boost and higher withdrawal limits.`;
-            document.getElementById('popAmount').textContent = dynamicPrime;
+            if(document.getElementById('popAmount')) document.getElementById('popAmount').textContent = dynamicPrime;
         } else {
             const dynamicRegular = dbConfigCache.nigeriaAmount || "₦15,000";
             if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = `Complete your Stream Fee payment (${dynamicRegular}) to unlock withdrawals and all Stream modules.`;
-            document.getElementById('popAmount').textContent = dynamicRegular;
+            if(document.getElementById('popAmount')) document.getElementById('popAmount').textContent = dynamicRegular;
         }
     }
 
-    // ON-SNAPSHOT REALTIME LISTENER FOR ADMIN CONFIGS
-    onSnapshot(doc(db, "configs", "main"), (snapshot) => {
-        if (snapshot.exists()) {
-            const configData = snapshot.data();
-            dbConfigCache = configData; // Store globally to read current snapshot field values inside auth state
-            
-            document.getElementById('BankName').textContent = configData.bankName || "Configured";
-            document.getElementById('accountNumber').textContent = configData.accountNumber || "Not Configured";
-            document.getElementById('accountName').textContent = configData.accountName || "Not Configured";
-            
-            if (configData.telegramLink) {
-                telegramRedirectUrl = configData.telegramLink;
+    // ACTIVE DATABASE SYNC AND MAPPING PROTOCOL
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            // Clean up listener if user logs out
+            if (snapshotListenerUnsubscribe) {
+                snapshotListenerUnsubscribe();
+                snapshotListenerUnsubscribe = null;
             }
-            
-            // Re-evaluate dynamic pricing fields instantly when configurations live-update on the panel
-            refreshDynamicAmounts();
+            window.location.href = 'login.html';
+            return;
         }
-    }, (error) => {
-        console.error("Error streaming admin configs matrix:", error);
-    });
+
+        try {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+                const data = userDocSnap.data();
+                
+                const fullName = data.fullName || "Stream Member";
+                userPlanType = data.plan || data.selectedPlan || "regular"; 
+                
+                const firstName = fullName.split(' ')[0];
+                
+                if(document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = `HI, ${firstName}!`;
+                if(document.getElementById('userEmail')) document.getElementById('userEmail').textContent = user.email;
+                
+                const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                if(document.getElementById('userAvatar')) document.getElementById('userAvatar').innerHTML = initials || '<i class="fas fa-user"></i>';
+
+                const isPlus = (userPlanType === 'prime');
+
+                if (isPlus) {
+                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦20,000';
+                    if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Prime Plan';
+                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Prime Plan – Higher daily earnings & VIP perks';
+                    if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x15 BOOST';
+                    if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x15 boost (Premium Plus benefit)';
+                } else {
+                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦14,000';
+                    if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Regular Plan';
+                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Activate your account to start earning up to ₦12,200+ daily';
+                    if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x10 BOOST';
+                    if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x10 boost on StreamStatus — paid in ₦';
+                }
+
+                // LIVE SNAPSHOT STARTS SAFELY HERE ONLY AFTER USER AUTH IS SECURED
+                if (!snapshotListenerUnsubscribe) {
+                    snapshotListenerUnsubscribe = onSnapshot(doc(db, "configs", "main"), (snapshot) => {
+                        if (snapshot.exists()) {
+                            const configData = snapshot.data();
+                            dbConfigCache = configData; 
+                            
+                            if(document.getElementById('BankName')) document.getElementById('BankName').textContent = configData.bankName || "Not Configured";
+                            if(document.getElementById('accountNumber')) document.getElementById('accountNumber').textContent = configData.accountNumber || "Not Configured";
+                            if(document.getElementById('accountName')) document.getElementById('accountName').textContent = configData.accountName || "Not Configured";
+                            
+                            if (configData.telegramLink) {
+                                telegramRedirectUrl = configData.telegramLink;
+                            }
+                            
+                            refreshDynamicAmounts();
+                        }
+                    }, (error) => {
+                        console.error("Error streaming admin configs matrix:", error);
+                    });
+                } else {
+                    // If listener is already alive, just force a visual calculations recalculation
+                    refreshDynamicAmounts();
+                }
+
+                const storagePaidKey = localStorage.getItem(`paid_${user.uid}`);
+                if (data.paidStatus === true || storagePaidKey === 'true') {
+                    if (storagePaidKey !== 'true') localStorage.setItem(`paid_${user.uid}`, 'true');
+                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = `<span class="text-emerald-400 font-bold"><i class="fas fa-check-circle"></i> Account Active</span> • Balance: ₦${(data.balance || 0).toLocaleString()}`;
+                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = `₦${(data.balance || 0).toLocaleString()}`;
+                }
+
+            } else {
+                if(window.showStreamAlert) window.showStreamAlert("Profile matrix document error.", "error");
+            }
+        } catch (err) {
+            console.error(err);
+            if(window.showStreamAlert) window.showStreamAlert("Error fetching cloud profile metrics.", "error");
+        }
+    });;
 
     // ACTIVE DATABASE SYNC AND MAPPING PROTOCOL
     onAuthStateChanged(auth, async (user) => {
