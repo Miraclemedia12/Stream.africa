@@ -185,7 +185,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 
@@ -244,21 +244,26 @@
     async function initPage() {
         setupUI();
         
+        // Listen directly for the authenticated user session instead of signing in anonymously
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const uid = user.uid;
+                
+                // Tracks selectedPlan from the active logged-in profile instantly
+                onSnapshot(doc(db, "users", uid), (userSnap) => {
+                    if (userSnap.exists()) {
+                        const userData = userSnap.data();
+                        userPlan = userData.selectedPlan ? userData.selectedPlan.trim().toLowerCase() : 'regular';
+                        updatePriceUI();
+                    }
+                });
+            } else {
+                console.warn("No user session found. Make sure you are logged in!");
+            }
+        });
+
         try {
-            const userCredential = await signInAnonymously(auth);
-            const uid = userCredential.user.uid;
-
-            // 1. Directly tracks selectedPlan from the active user profile instantly
-            onSnapshot(doc(db, "users", uid), (userSnap) => {
-                if (userSnap.exists()) {
-                    const userData = userSnap.data();
-                    // Clean and check the database value safely
-                    userPlan = userData.selectedPlan ? userData.selectedPlan.trim().toLowerCase() : 'regular';
-                    updatePriceUI();
-                }
-            });
-
-            // 2. Targets "gateway/nigeria" perfectly syncing with your Admin Panel
+            // Targets "gateway/nigeria" perfectly syncing with your Admin Panel
             onSnapshot(doc(db, "gateway", "nigeria"), (snap) => {
                 if(snap.exists()) {
                     const d = snap.data();
