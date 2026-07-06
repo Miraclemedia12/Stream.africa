@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
         
         :root { 
             --stream-green: #b8d5b0; 
@@ -93,10 +93,10 @@
 
         <form id="login-form" onsubmit="executeLogin(event)" class="space-y-5 text-left">
             <div class="relative">
-                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1 mb-1.5 block">Email / Username</label>
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1 mb-1.5 block">Email Address</label>
                 <div class="relative">
                     <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-white/20 text-sm"></i>
-                    <input type="text" id="login-user" required placeholder="Enter your email" class="w-full pl-12 p-4 rounded-2xl outline-none text-sm">
+                    <input type="email" id="login-user" required placeholder="Enter your email address" class="w-full pl-12 p-4 rounded-2xl outline-none text-sm">
                 </div>
             </div>
             
@@ -112,7 +112,7 @@
             </div>
 
             <div class="pt-2">
-                <button type="submit" class="w-full stream-btn p-4 rounded-2xl shadow-xl uppercase tracking-widest text-sm font-black">
+                <button type="submit" id="submit-btn" class="w-full stream-btn p-4 rounded-2xl shadow-xl uppercase tracking-widest text-sm font-black">
                     Sign In
                 </button>
             </div>
@@ -126,8 +126,25 @@
         </div>
     </div>
 
-<script>
-    // Custom non-popup message handler
+<script type="module">
+    // Imported your specific Firebase v11 configurations
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCBasWo7DVLYV6WiP7TKEayMXLPeH3JLMs",
+        authDomain: "streamafrica-7fc5d.firebaseapp.com",
+        projectId: "streamafrica-7fc5d",
+        storageBucket: "streamafrica-7fc5d.firebasestorage.app",
+        messagingSenderId: "339049993823",
+        appId: "1:339049993823:web:70d0e998269627d8646dea",
+        measurementId: "G-R8VZ77T1J6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Custom notification toast controller
     function displayNotification(message, isError = true) {
         const toast = document.getElementById('custom-toast');
         const msgSpan = document.getElementById('toast-msg');
@@ -145,27 +162,51 @@
         }, 3500);
     }
 
-    // Submission handler
-    function executeLogin(event) {
+    // Submission handler bound to window to make it accessible to inline form attributes
+    window.executeLogin = async (event) => {
         event.preventDefault();
         
-        const userInput = document.getElementById('login-user').value.trim();
+        const emailInput = document.getElementById('login-user').value.trim();
         const passInput = document.getElementById('login-pass').value;
+        const submitBtn = document.getElementById('submit-btn');
 
-        // Add authentication integration logic here (Firebase Auth API, Fetch request, etc.)
-        if (userInput === "" || passInput === "") {
+        if (emailInput === "" || passInput === "") {
             displayNotification("Please fill in all fields required", true);
             return;
         }
 
-        // Example trigger check: 
-        if (userInput === "admin@stream.africa" && passInput === "password123") {
+        // Change button state to show loading progress
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Processing...";
+
+        try {
+            // signs the specific persistent user session directly into Firebase Auth
+            await signInWithEmailAndPassword(auth, emailInput, passInput);
+            
             displayNotification("Login Successful! Redirecting...", false);
-            // window.location.href = "dashboard.html";
-        } else {
-            displayNotification("Invalid account username or password status", true);
+            
+            // Redirects to your newly updated checkout path to pull their correct premium/regular plans
+            setTimeout(() => {
+                window.location.href = "checkout.html";
+            }, 1500);
+
+        } catch (error) {
+            console.error("Auth Failure:", error.code);
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Sign In";
+
+            // Map standard auth codes neatly into clear, customized toast errors
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                displayNotification("Invalid email address or password status", true);
+            } else if (error.code === 'auth/invalid-email') {
+                displayNotification("The email address format is invalid", true);
+            } else if (error.code === 'auth/user-disabled') {
+                displayNotification("This user profile account has been disabled", true);
+            } else {
+                displayNotification("Authentication error. Please try again", true);
+            }
         }
-    }
+    };
 </script>
 </body>
 </html>
