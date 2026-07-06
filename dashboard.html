@@ -551,75 +551,8 @@
     <div class="activation-modal" id="activationModal">        
         <div class="activation-content">            
             <div class="activation-icon"><i class="fas fa-gem"></i></div>            
-            <h2 class="activation-title">Activate Your Stream Account</h2>            
-            <p class="activation-message" id="modalMessage">Complete your Stream Fee payment to unlock withdrawals and all Stream modules.</p>            
-            
-            <button class="activate-now-btn" id="activateNowBtn">Pay Stream Fee</button>            
-            
-            <div class="mt-4">
-                <a class="cancel-link" id="cancelModalLink">Maybe later</a>            
-            </div>
-        </div>    
-    </div>
-
-    <div class="details-modal" id="detailsModal">
-        <div class="w-full max-w-md mx-auto bg-[#0d1211] border border-[#b8d5b0]/30 rounded-3xl p-6 md:p-8 shadow-2xl relative">
-            <button id="closeDetailsBtn" class="absolute top-5 right-5 text-white/50 hover:text-white text-xl">
-                <i class="fas fa-times"></i>
-            </button>
-
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 rounded-full bg-[#b8d5b0]/10 flex items-center justify-center text-[#b8d5b0] text-2xl mx-auto mb-3">
-                    <i class="fas fa-university"></i>
-                </div>
-                <h3 class="text-xl font-extrabold uppercase text-[#b8d5b0] tracking-wide">Direct Bank Transfer</h3>
-                <p class="text-xs text-white/60 mt-1">Transfer the exact fee structure to the configs below</p>
-            </div>
-
-            <div class="space-y-4">
-                <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
-                    <span class="text-[10px] uppercase font-bold tracking-widest text-white/50">Amount to Remit</span>
-                    <div class="text-3xl font-black text-[#b8d5b0] mt-1 flex items-center justify-center gap-2">
-                        <span id="popAmount">₦15,000</span>
-                        <button onclick="navigator.clipboard.writeText(document.getElementById('popAmount').innerText.replace('₦','').replace(',','')); window.showStreamAlert('Amount copied!')" class="text-xs text-white/40 hover:text-[#b8d5b0]"><i class="fas fa-copy"></i></button>
-                    </div>
-                </div>
-
-                <div class="space-y-3">
-                    <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
-                        <div>
-                            <span class="text-[10px] uppercase font-bold text-white/40 block">Bank Institution</span>
-                            <span id="displayBankName" class="text-sm font-bold text-white tracking-wide">Fetching Bank...</span>
-                        </div>
-                        <button onclick="navigator.clipboard.writeText(document.getElementById('BankName').innerText); window.showStreamAlert('Bank name copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
-                    </div>
-
-                    <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
-                        <div>
-                            <span class="text-[10px] uppercase font-bold text-white/40 block">Account Number</span>
-                            <b class="text-lg font-black tracking-wider text-[#b8d5b0]" id="accountNumber">Loading Details...</b>
-                        </div>
-                        <button onclick="navigator.clipboard.writeText(document.getElementById('accountNumber').innerText); window.showStreamAlert('Account number copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
-                    </div>
-
-                    <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
-                        <div>
-                            <span class="text-[10px] uppercase font-bold text-white/40 block">Account Holder Name</span>
-                            <b class="text-sm font-bold tracking-wide text-white" id="accountName">Loading Name...</b>
-                        </div>
-                        <button onclick="navigator.clipboard.writeText(document.getElementById('accountName').innerText); window.showStreamAlert('Account name copied!')" class="text-white/40 hover:text-[#b8d5b0] p-2"><i class="fas fa-copy"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-6 space-y-3">
-                <button id="madeTransferBtn" class="w-full bg-[#b8d5b0] text-[#0a1f1c] font-black py-4 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 text-sm uppercase tracking-wider">
-                    I Have Made Transfer
-                </button>
-                <p class="text-[10px] text-center text-white/40 leading-relaxed px-2">Clicking verification logs configuration credentials. Direct secure channel redirects manually to validation manager.</p>
-            </div>
-        </div>
-    </div>
+           <p class="activation-message" id="modalMessage">Complete your Stream Fee payment to unlock withdrawals and all Stream modules.</p>            
+<button class="activate-now-btn" id="activateNowBtn">Pay Stream Fee</button> 
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
@@ -641,11 +574,7 @@
     const db = getFirestore(app);
 
     let userPlanType = "regular";
-    let telegramRedirectUrl = "https://t.me/Miraclemedia"; // Default backup fallback URL
-    
-    // Global active cache objects to sync state seamlessly
     let dbConfigCache = null;
-    let snapshotListenerUnsubscribe = null; // To prevent duplicate memory leaks
 
     function refreshDynamicAmounts() {
         if (!dbConfigCache) return;
@@ -654,102 +583,13 @@
         if (isPlus) {
             const dynamicPrime = dbConfigCache.primeAmount || "₦20,000";
             if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = `Activate your Stream Prime Plan account (${dynamicPrime}) to unlock VIP rewards, x15 boost and higher withdrawal limits.`;
-            if(document.getElementById('popAmount')) document.getElementById('popAmount').textContent = dynamicPrime;
         } else {
             const dynamicRegular = dbConfigCache.nigeriaAmount || "₦15,000";
             if(document.getElementById('modalMessage')) document.getElementById('modalMessage').textContent = `Complete your Stream Fee payment (${dynamicRegular}) to unlock withdrawals and all Stream modules.`;
-            if(document.getElementById('popAmount')) document.getElementById('popAmount').textContent = dynamicRegular;
         }
     }
 
-    // ACTIVE DATABASE SYNC AND MAPPING PROTOCOL
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            // Clean up listener if user logs out
-            if (snapshotListenerUnsubscribe) {
-                snapshotListenerUnsubscribe();
-                snapshotListenerUnsubscribe = null;
-            }
-            window.location.href = 'login.html';
-            return;
-        }
-
-        try {
-            const userDocRef = doc(db, "users", user.uid);
-            const userDocSnap = await getDoc(userDocRef);
-
-            if (userDocSnap.exists()) {
-                const data = userDocSnap.data();
-                
-                const fullName = data.fullName || "Stream Member";
-                userPlanType = data.plan || data.selectedPlan || "regular"; 
-                
-                const firstName = fullName.split(' ')[0];
-                
-                if(document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = `HI, ${firstName}!`;
-                if(document.getElementById('userEmail')) document.getElementById('userEmail').textContent = user.email;
-                
-                const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                if(document.getElementById('userAvatar')) document.getElementById('userAvatar').innerHTML = initials || '<i class="fas fa-user"></i>';
-
-                const isPlus = (userPlanType === 'prime');
-
-                if (isPlus) {
-                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦20,000';
-                    if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Prime Plan';
-                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Prime Plan – Higher daily earnings & VIP perks';
-                    if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x15 BOOST';
-                    if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x15 boost (Premium Plus benefit)';
-                } else {
-                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦14,000';
-                    if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Regular Plan';
-                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Activate your account to start earning up to ₦12,200+ daily';
-                    if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x10 BOOST';
-                    if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x10 boost on StreamStatus — paid in ₦';
-                }
-
-                // LIVE SNAPSHOT STARTS SAFELY HERE ONLY AFTER USER AUTH IS SECURED
-                if (!snapshotListenerUnsubscribe) {
-                    snapshotListenerUnsubscribe = onSnapshot(doc(db, "configs", "main"), (snapshot) => {
-                        if (snapshot.exists()) {
-                            const configData = snapshot.data();
-                            dbConfigCache = configData; 
-                            
-                            if(document.getElementById('BankName')) document.getElementById('BankName').textContent = configData.bankName || "Not Configured";
-                            if(document.getElementById('accountNumber')) document.getElementById('accountNumber').textContent = configData.accountNumber || "Not Configured";
-                            if(document.getElementById('accountName')) document.getElementById('accountName').textContent = configData.accountName || "Not Configured";
-                            
-                            if (configData.telegramLink) {
-                                telegramRedirectUrl = configData.telegramLink;
-                            }
-                            
-                            refreshDynamicAmounts();
-                        }
-                    }, (error) => {
-                        console.error("Error streaming admin configs matrix:", error);
-                    });
-                } else {
-                    // If listener is already alive, just force a visual calculations recalculation
-                    refreshDynamicAmounts();
-                }
-
-                const storagePaidKey = localStorage.getItem(`paid_${user.uid}`);
-                if (data.paidStatus === true || storagePaidKey === 'true') {
-                    if (storagePaidKey !== 'true') localStorage.setItem(`paid_${user.uid}`, 'true');
-                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = `<span class="text-emerald-400 font-bold"><i class="fas fa-check-circle"></i> Account Active</span> • Balance: ₦${(data.balance || 0).toLocaleString()}`;
-                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = `₦${(data.balance || 0).toLocaleString()}`;
-                }
-
-            } else {
-                if(window.showStreamAlert) window.showStreamAlert("Profile matrix document error.", "error");
-            }
-        } catch (err) {
-            console.error(err);
-            if(window.showStreamAlert) window.showStreamAlert("Error fetching cloud profile metrics.", "error");
-        }
-    });;
-
-    // ACTIVE DATABASE SYNC AND MAPPING PROTOCOL
+    // AUTH STATE CHECKING & DATA LOADING
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
             window.location.href = 'login.html';
@@ -762,98 +602,43 @@
 
             if (userDocSnap.exists()) {
                 const data = userDocSnap.data();
-                
                 const fullName = data.fullName || "Stream Member";
                 userPlanType = data.plan || data.selectedPlan || "regular"; 
-                
                 const firstName = fullName.split(' ')[0];
                 
                 if(document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = `HI, ${firstName}!`;
                 if(document.getElementById('userEmail')) document.getElementById('userEmail').textContent = user.email;
-                
-                const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                if(document.getElementById('userAvatar')) document.getElementById('userAvatar').innerHTML = initials || '<i class="fas fa-user"></i>';
 
                 const isPlus = (userPlanType === 'prime');
-
                 if (isPlus) {
                     if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦20,000';
                     if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Prime Plan';
-                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Prime Plan – Higher daily earnings & VIP perks';
-                    if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x15 BOOST';
-                    if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x15 boost (Premium Plus benefit)';
                 } else {
                     if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = '₦14,000';
                     if(document.getElementById('planBadge')) document.getElementById('planBadge').textContent = 'Regular Plan';
-                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = 'Activate your account to start earning up to ₦12,200+ daily';
-                    if(document.getElementById('boostBadge')) document.getElementById('boostBadge').textContent = 'x10 BOOST';
-                    if(document.getElementById('streamMessage')) document.getElementById('streamMessage').textContent = 'Join Livestreams on TikTok for x10 boost on StreamStatus — paid in ₦';
                 }
 
-                // Render dynamic amount allocations safely from cache
-                refreshDynamicAmounts();
+                // Call for dynamic config values
+                onSnapshot(doc(db, "configs", "main"), (snapshot) => {
+                    if (snapshot.exists()) {
+                        dbConfigCache = snapshot.data();
+                        refreshDynamicAmounts();
+                    }
+                });
 
-                const storagePaidKey = localStorage.getItem(`paid_${user.uid}`);
-                if (data.paidStatus === true || storagePaidKey === 'true') {
-                    if (storagePaidKey !== 'true') localStorage.setItem(`paid_${user.uid}`, 'true');
-                    if(document.getElementById('balanceNote')) document.getElementById('balanceNote').innerHTML = `<span class="text-emerald-400 font-bold"><i class="fas fa-check-circle"></i> Account Active</span> • Balance: ₦${(data.balance || 0).toLocaleString()}`;
-                    if(document.getElementById('earningsAmount')) document.getElementById('earningsAmount').textContent = `₦${(data.balance || 0).toLocaleString()}`;
-                }
-
-            } else {
-                if(window.showStreamAlert) window.showStreamAlert("Profile matrix document error.", "error");
             }
         } catch (err) {
-            console.error(err);
-            if(window.showStreamAlert) window.showStreamAlert("Error fetching cloud profile metrics.", "error");
+            console.error("Initialization Error: ", err);
         }
     });
 
-    // MODAL CONTROL INTERACTION SCHEMES
-    const modal = document.getElementById('activationModal');
-    const detailsModal = document.getElementById('detailsModal');
-
-    const closeModal = () => { if(modal) modal.style.display = 'none'; document.body.style.overflow = 'auto'; };
-    const openModal = () => { if(modal) modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; };
-    
-    const openDetailsModal = () => {
-        closeModal(); 
-        if(detailsModal) detailsModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    };
-    const closeDetailsModal = () => { if(detailsModal) detailsModal.style.display = 'none'; document.body.style.overflow = 'auto'; };
-    
-    document.querySelectorAll('.modal-trigger').forEach(trigger => trigger.addEventListener('click', openModal));
-    if(document.getElementById('cancelModalLink')) document.getElementById('cancelModalLink').addEventListener('click', closeModal);
-    
-    if(document.getElementById('activateNowBtn')) document.getElementById('activateNowBtn').addEventListener('click', openDetailsModal);
-    if(document.getElementById('closeDetailsBtn')) document.getElementById('closeDetailsBtn').addEventListener('click', closeDetailsModal);
-
-    document.getElementById('madeTransferBtn').addEventListener('click', () => {
-        window.location.href = telegramRedirectUrl;
-    });
-
-    window.addEventListener('click', (e) => { 
-        if (e.target === modal) closeModal(); 
-    });
-
-    if(document.getElementById('logout-panel-btn')) {
-        document.getElementById('logout-panel-btn').addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-                if(window.showStreamAlert) window.showStreamAlert("Session severed safely.");
-                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
-            } catch (err) {
-                if(window.showStreamAlert) window.showStreamAlert("Error running exit procedure.", "error");
-            }
+    // REDIRECT PROTOCOL
+    // When they click 'Pay Stream Fee', it redirects directly to payment page
+    if(document.getElementById('activateNowBtn')) {
+        document.getElementById('activateNowBtn').addEventListener('click', () => {
+            window.location.href = 'payment.html'; 
         });
     }
-
-    document.querySelectorAll('.action-btn').forEach(btn => btn.addEventListener('click', function () {
-        if(this.id === 'logout-panel-btn') return;
-        document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-    }));
 </script>
 </body>
 </html>
